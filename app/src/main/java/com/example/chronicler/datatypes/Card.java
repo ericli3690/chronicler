@@ -1,4 +1,4 @@
-package com.example.chronicler;
+package com.example.chronicler.datatypes;
 
 import java.util.List;
 

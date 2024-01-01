@@ -1,14 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="horizontal"
-    android:padding="10dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp"
     android:id="@+id/sub_deck_row_root">
 
     <TextView
+        android:id="@+id/sub_deck_row_name_tv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/deck_name_tv"/>
+        android:textSize="15sp" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/sub_deck_row_rv"/>
 
 </LinearLayout>

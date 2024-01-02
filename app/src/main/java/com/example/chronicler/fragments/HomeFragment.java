@@ -47,6 +47,7 @@ public class HomeFragment extends Fragment {
         // read decks from file
         FileManager<Deck> fileManager = new FileManager<Deck>("deck.txt", Deck.class, getContext(), getActivity());
         Deck MASTER_DECK = fileManager.readObjectsFromFile().get(0);
+        MASTER_DECK.doSortChildren();
 
         // get recyclerview
         RecyclerView deckRv = binding.fragmentHomeRv;
@@ -55,13 +56,13 @@ public class HomeFragment extends Fragment {
         // set divider
         deckRv.addItemDecoration(new DividerItemDecoration(deckRv.getContext(), DividerItemDecoration.VERTICAL));
         // set adapter
-        deckRv.setAdapter(new HomeRecyclerViewAdapter(MASTER_DECK, getContext(), getActivity(), this));
+        deckRv.setAdapter(new HomeRecyclerViewAdapter(MASTER_DECK, MASTER_DECK, getContext(), getActivity(), this));
 
         // set onclicks
         binding.fragmentHomeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ActionHomeFragmentToAddEditDeckFragment action = HomeFragmentDirections.actionHomeFragmentToAddEditDeckFragment(true);
+                ActionHomeFragmentToAddEditDeckFragment action = HomeFragmentDirections.actionHomeFragmentToAddEditDeckFragment(true, 0, -1);
                 NavHostFragment.findNavController(HomeFragment.this).navigate(action);
             }
         });
@@ -81,7 +82,7 @@ public class HomeFragment extends Fragment {
         MASTER_DECK.children.add(new Deck("Four"));
 
         // write to file
-        MASTER_DECK.children = MASTER_DECK.sortChildren(); // sort alphabetically by name
+        MASTER_DECK.doSortChildren(); // sort alphabetically by name
         List<Deck> filePackage = new ArrayList<Deck>();
         filePackage.add(MASTER_DECK);
         FileManager<Deck> fileManager = new FileManager<Deck>("deck.txt", Deck.class, getContext(), getActivity());

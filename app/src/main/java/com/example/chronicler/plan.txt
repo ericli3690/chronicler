@@ -1,6 +1,5 @@
 IMPORTANT THINGS
-- on add edit screen, make done button always stick to bottom
-- allow passing of parameters about which was pressed from adapter to add edit (see logd)
+- delete deck
 
 RANDOM STUFF
 - add delete button to addeditfragment

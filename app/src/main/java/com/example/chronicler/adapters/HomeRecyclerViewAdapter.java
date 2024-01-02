@@ -27,14 +27,16 @@ public class HomeRecyclerViewAdapter extends RecyclerView.Adapter<HomeRecyclerVi
     // instance vars
     private SubDeckRowBinding binding;
     private final Deck rootDeck;
+    private final Deck MASTER_DECK;
     private final Context context;
     private final Activity activity;
     private final HomeFragment fragment;
 
     // constructor
-    public HomeRecyclerViewAdapter(Deck rootDeck, Context context, Activity activity, HomeFragment fragment) {
+    public HomeRecyclerViewAdapter(Deck rootDeck, Deck MASTER_DECK, Context context, Activity activity, HomeFragment fragment) {
         // vital information about contents
         this.rootDeck = rootDeck;
+        this.MASTER_DECK = MASTER_DECK;
         // important enclosing information
         this.context = context;
         this.activity = activity;
@@ -52,17 +54,15 @@ public class HomeRecyclerViewAdapter extends RecyclerView.Adapter<HomeRecyclerVi
         binding.getRoot().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // which deck was clicked
+                // which deck was clicked; get its position in the flattenedlist
                 Deck deck = rootDeck.children.get(viewHolder.getBindingAdapterPosition());
-                // find the clicked deck's parent
-                List<Deck> flattenedList = rootDeck.getFlattenedList();
+                List<Deck> flattenedList = MASTER_DECK.getFlattenedList();
                 int deckIndex = flattenedList.indexOf(deck);
-                List<Integer> parentPointers = rootDeck.getHierarchy();
-                int parentIndex = (int) parentPointers.get(deckIndex); // returns an Integer
-                Deck parent = flattenedList.get(parentIndex);
-                Log.d("hi", deck.name + " " + parent.name);
+                // find the clicked deck's parent; get its position in the flattened list
+                List<Integer> parentPointers = MASTER_DECK.getHierarchy();
+                Integer parentIndex = parentPointers.get(deckIndex); // returns an Integer
                 // transition to edit screen with this info
-                HomeFragmentDirections.ActionHomeFragmentToAddEditDeckFragment action = HomeFragmentDirections.actionHomeFragmentToAddEditDeckFragment(false);
+                HomeFragmentDirections.ActionHomeFragmentToAddEditDeckFragment action = HomeFragmentDirections.actionHomeFragmentToAddEditDeckFragment(false, deckIndex, parentIndex);
                 NavHostFragment.findNavController(fragment).navigate(action);
             }
         });
@@ -87,7 +87,7 @@ public class HomeRecyclerViewAdapter extends RecyclerView.Adapter<HomeRecyclerVi
         // set divider
         childrenRv.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
         // set adapter
-        childrenRv.setAdapter(new HomeRecyclerViewAdapter(childDeck, context, activity, fragment));
+        childrenRv.setAdapter(new HomeRecyclerViewAdapter(childDeck, MASTER_DECK, context, activity, fragment));
     }
 
     // required method implementation

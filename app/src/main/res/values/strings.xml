@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">Chronicler</string>
     <string name="add_deck">Add Deck</string>
+    <string name="new_deck">New Deck</string>
+    <string name="name_colon">Name:</string>
+    <string name="parent_deck_colon">Parent Deck:</string>
+    <string name="done">Done</string>
+    <string name="delete">Delete</string>
 </resources>

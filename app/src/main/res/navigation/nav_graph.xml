@@ -40,5 +40,11 @@
             <argument
                 android:name="isNew"
                 app:argType="boolean" />
+        <argument
+            android:name="deckIndex"
+            app:argType="integer" />
+        <argument
+            android:name="parentIndex"
+            app:argType="integer" />
     </fragment>
 </navigation>

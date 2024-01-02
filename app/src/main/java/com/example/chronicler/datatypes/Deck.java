@@ -1,5 +1,7 @@
 package com.example.chronicler.datatypes;
 
+import android.os.Parcelable;
+
 import com.example.chronicler.functions.Sorter;
 
 import java.util.ArrayList;
@@ -34,8 +36,12 @@ public class Deck {
         this.highStreak = 0;
     }
 
+    public void doSortChildren() {
+        this.children = this.sortChildren();
+    }
+
     // sort
-    public List<Deck> sortChildren() {
+    private List<Deck> sortChildren() {
         List<Deck> toSort = new ArrayList<Deck>();
         for (Deck child : this.children) {
             if (child.children.size() == 0) { // this specific child does not have any children
@@ -76,26 +82,27 @@ public class Deck {
 
     // main call into hierarchy
     public List<Integer> getHierarchy() {
-        return this.hierarchy(-1);
+        List<Integer> toReturn = new ArrayList<Integer>();
+        this.hierarchy(-1, toReturn);
+        return toReturn;
     }
 
     // get a list of pointers to parents
     // MASTER_DECK.getFlattenedList().indexOf(MASTER_DECK.getHierarchy().get(child)) = parent
-    private List<Integer> hierarchy(int parentLocation) {
+    private void hierarchy(int parentLocation, List<Integer> toReturn) {
         // a depth first search of the deck tree
-        List<Integer> toReturn = new ArrayList<Integer>();
         toReturn.add(parentLocation); // at this deck's position, insert data pointing to its parent location
         if (this.children.size() == 0) { // no children, nothing more to do
             // this is the base case
         } else { // there are children
             // for each, repeat
+            int parentOfAllTheseChildren = toReturn.size()-1;
             for (Deck child : this.children) {
                 // tell all the children that its parent is this current object
                 // take what they return and append it
-                toReturn.addAll(child.hierarchy(parentLocation+1));
+                child.hierarchy(parentOfAllTheseChildren, toReturn);
             }
         }
-        return toReturn; // return upwards
     }
 
 //    public List<Deck> getParentsOfChild(Deck childToFind) {

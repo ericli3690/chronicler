@@ -2,6 +2,7 @@ package com.example.chronicler.functions;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
@@ -16,15 +17,17 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FileManager {
+public class FileManager<T> {
     // instance vars
     private final File file;
+    private final Class<T> objectClass;
     private final Activity activity;
     private final GsonBuilder builder;
     private final Gson gson;
 
-    public FileManager(String filepath, Context context, Activity activity) {
+    public FileManager(String filepath, Class<T> objectClass, Context context, Activity activity) {
         this.file = new File(context.getFilesDir(), filepath);
+        this.objectClass = objectClass;
         this.activity = activity;
         // uses gson, a package for writing between objects and json
         this.builder = new GsonBuilder();
@@ -44,7 +47,7 @@ public class FileManager {
         ).show(); // immediately show
     }
 
-    public void writeObjectsToFile(List<Object> objects) {
+    public void writeObjectsToFile(List<T> objects) {
         // convert each object to json using gson
         String[] toWrites = new String[objects.size()];
         for (int objectIndex = 0; objectIndex < objects.size(); objectIndex++) {
@@ -67,7 +70,7 @@ public class FileManager {
         }
     }
 
-    public List<Object> readObjectsFromFile() {
+    public List<T> readObjectsFromFile() {
         // prepare output list for json strings
         // must use an arraylist because it is not known at this time how large the file is, and how many read outs there will be
         List<String> readOuts = new ArrayList<String>();
@@ -82,16 +85,13 @@ public class FileManager {
         } catch (IOException e) {
             // failed for whatever reason
             this.onError(1);
-            return new ArrayList<Object>();
+            return new ArrayList<T>();
         }
         // prepare output list for final output objects
-        List<Object> objects = new ArrayList<Object>();
+        List<T> objects = new ArrayList<T>();
         // for each, convert using gson
         for (int readOutIndex = 0; readOutIndex < readOuts.size(); readOutIndex++) {
-            objects.set(
-                    readOutIndex, // at this location
-                    gson.fromJson(readOuts.get(readOutIndex), Object.class) // this object
-            );
+            objects.add(gson.fromJson(readOuts.get(readOutIndex), this.objectClass));
         }
         // return final list
         return objects;

@@ -18,6 +18,8 @@ import com.example.chronicler.adapters.HomeRecyclerViewAdapter;
 import com.example.chronicler.R;
 import com.example.chronicler.databinding.FragmentHomeBinding;
 import com.example.chronicler.datatypes.Deck;
+import com.example.chronicler.fragments.HomeFragmentDirections.ActionHomeFragmentToAddEditDeckFragment;
+import com.example.chronicler.functions.FileManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,17 +40,13 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        List<Deck> decks = new ArrayList<Deck>();
-//        Deck deck1 = new Deck("One");
-//        deck1.children.add(new Deck("One One"));
-//        deck1.children.add(new Deck("One Two"));
-//
-////        FileManager fm = new FileManager("test", getContext(), getActivity());
-////        fm.writeObjectToFile(deck1);
-//
-//        decks.add(deck1);
-        decks.add(new Deck("Two"));
-        decks.add(new Deck("Three"));
+        // TESTING ONLY
+        // TODO: delete later
+//        resetDecks();
+
+        // read decks from file
+        FileManager<Deck> fileManager = new FileManager<Deck>("deck.txt", Deck.class, getContext(), getActivity());
+        Deck MASTER_DECK = fileManager.readObjectsFromFile().get(0);
 
         // get recyclerview
         RecyclerView deckRv = binding.fragmentHomeRv;
@@ -57,14 +55,36 @@ public class HomeFragment extends Fragment {
         // set divider
         deckRv.addItemDecoration(new DividerItemDecoration(deckRv.getContext(), DividerItemDecoration.VERTICAL));
         // set adapter
-        deckRv.setAdapter(new HomeRecyclerViewAdapter(decks, getContext(), getActivity()));
+        deckRv.setAdapter(new HomeRecyclerViewAdapter(MASTER_DECK, getContext(), getActivity(), this));
 
+        // set onclicks
         binding.fragmentHomeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                NavHostFragment.findNavController(HomeFragment.this)
-                        .navigate(R.id.action_homeFragment_to_addEditDeckFragment);
+                ActionHomeFragmentToAddEditDeckFragment action = HomeFragmentDirections.actionHomeFragmentToAddEditDeckFragment(true);
+                NavHostFragment.findNavController(HomeFragment.this).navigate(action);
             }
         });
+    }
+
+    // FOR TESTING ONLY
+    // TODO: delete later
+    private void resetDecks() {
+
+        // create invisible master deck
+        Deck MASTER_DECK = new Deck("(none)");
+
+        // add children
+        MASTER_DECK.children.add(new Deck("One"));
+        MASTER_DECK.children.add(new Deck("Two"));
+        MASTER_DECK.children.add(new Deck("Three"));
+        MASTER_DECK.children.add(new Deck("Four"));
+
+        // write to file
+        MASTER_DECK.children = MASTER_DECK.sortChildren(); // sort alphabetically by name
+        List<Deck> filePackage = new ArrayList<Deck>();
+        filePackage.add(MASTER_DECK);
+        FileManager<Deck> fileManager = new FileManager<Deck>("deck.txt", Deck.class, getContext(), getActivity());
+        fileManager.writeObjectsToFile(filePackage);
     }
 }

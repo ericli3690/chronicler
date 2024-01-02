@@ -1,5 +1,15 @@
+buildscript {
+    repositories {
+        google()
+    }
+    dependencies {
+        classpath 'androidx.navigation:navigation-safe-args-gradle-plugin:2.7.6'
+    }
+}
+
 plugins {
     id 'com.android.application'
+    id 'androidx.navigation.safeargs' version '2.4.2' apply true
 }
 
 android {

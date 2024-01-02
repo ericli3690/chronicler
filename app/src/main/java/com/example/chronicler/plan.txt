@@ -1,0 +1,10 @@
+IMPORTANT THINGS
+- on add edit screen, make done button always stick to bottom
+- allow passing of parameters about which was pressed from adapter to add edit (see logd)
+
+RANDOM STUFF
+- add delete button to addeditfragment
+- filemanager writing an array has never been tested
+
+FINALS
+- handle all todos

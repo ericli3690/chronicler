@@ -18,6 +18,10 @@
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
             app:popExitAnim="@anim/nav_default_pop_exit_anim"
             app:popUpTo="@id/homeFragment" />
+<!--        for some reason there needs to be an argument for this to work ???? not going to complain -->
+        <argument
+            android:name="empty"
+            app:argType="boolean" />
     </fragment>
     <fragment
         android:id="@+id/addEditDeckFragment"
@@ -32,5 +36,9 @@
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
             app:popExitAnim="@anim/nav_default_pop_exit_anim"
             app:popUpTo="@id/homeFragment" />
+
+            <argument
+                android:name="isNew"
+                app:argType="boolean" />
     </fragment>
 </navigation>

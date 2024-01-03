@@ -88,7 +88,7 @@ public class Deck {
     }
 
     // get a list of pointers to parents
-    // MASTER_DECK.getFlattenedList().indexOf(MASTER_DECK.getHierarchy().get(child)) = parent
+    // masterDeck.getFlattenedList().indexOf(masterDeck.getHierarchy().get(child)) = parent
     private void hierarchy(int parentLocation, List<Integer> toReturn) {
         // a depth first search of the deck tree
         toReturn.add(parentLocation); // at this deck's position, insert data pointing to its parent location

@@ -43,6 +43,14 @@ android {
         viewBinding true
     }
 
+    sourceSets {
+        main {
+            java {
+                srcDirs += 'build/generated/source/navigation-args'
+            }
+        }
+    }
+
 }
 
 dependencies {

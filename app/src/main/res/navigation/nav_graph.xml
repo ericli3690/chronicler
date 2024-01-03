@@ -10,41 +10,55 @@
         android:name="com.example.chronicler.fragments.HomeFragment"
         android:label="fragment_home"
         tools:layout="@layout/fragment_home" >
-        <action
-            android:id="@+id/action_homeFragment_to_addEditDeckFragment"
-            app:destination="@id/addEditDeckFragment"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim"
-            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-            app:popExitAnim="@anim/nav_default_pop_exit_anim"
-            app:popUpTo="@id/homeFragment" />
-<!--        for some reason there needs to be an argument for this to work ???? not going to complain -->
+        <!--        for some reason there needs to be an argument for this to work ???? not going to complain -->
         <argument
             android:name="empty"
             app:argType="boolean" />
+        <action
+            android:id="@+id/action_homeFragment_to_deckFragment"
+            app:destination="@id/deckFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_addEditDeckFragment"
+            app:destination="@id/addEditDeckFragment" />
     </fragment>
     <fragment
         android:id="@+id/addEditDeckFragment"
         android:name="com.example.chronicler.fragments.AddEditDeckFragment"
         android:label="fragment_add_edit_deck"
         tools:layout="@layout/fragment_add_edit_deck" >
-        <action
-            android:id="@+id/action_addEditDeckFragment_to_homeFragment"
-            app:destination="@id/homeFragment"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim"
-            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-            app:popExitAnim="@anim/nav_default_pop_exit_anim"
-            app:popUpTo="@id/homeFragment" />
 
-            <argument
-                android:name="isNew"
-                app:argType="boolean" />
+        <argument
+            android:name="isNew"
+            app:argType="boolean" />
         <argument
             android:name="deckIndex"
             app:argType="integer" />
         <argument
             android:name="parentIndex"
             app:argType="integer" />
+        <action
+            android:id="@+id/action_addEditDeckFragment_to_deckFragment"
+            app:destination="@id/deckFragment" />
+        <action
+            android:id="@+id/action_addEditDeckFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/deckFragment"
+        android:name="com.example.chronicler.fragments.DeckFragment"
+        android:label="fragment_deck"
+        tools:layout="@layout/fragment_deck" >
+        <argument
+            android:name="deckIndex"
+            app:argType="integer" />
+        <argument
+            android:name="parentIndex"
+            app:argType="integer" />
+        <action
+            android:id="@+id/action_deckFragment_to_addEditDeckFragment"
+            app:destination="@id/addEditDeckFragment" />
+        <action
+            android:id="@+id/action_deckFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
     </fragment>
 </navigation>

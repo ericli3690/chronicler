@@ -11,8 +11,16 @@ import androidx.navigation.ui.NavigationUI;
 import android.os.Bundle;
 
 import com.example.chronicler.databinding.ActivityMainBinding;
+import com.example.chronicler.datatypes.Deck;
+import com.example.chronicler.functions.FileManager;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+
+    public FileManager<Deck> masterDeckManager;
+    public Deck masterDeck;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,6 +31,21 @@ public class MainActivity extends AppCompatActivity {
         // get toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.activity_main_toolbar);
         setSupportActionBar(toolbar);
+        
+        // retrieve deck list
+        masterDeckManager = new FileManager<Deck>("decks.txt", Deck.class, MainActivity.this, this);
+        if (!masterDeckManager.wasCreatedAlready()) {
+            // does the master deck NOT exist?
+            // if so create it and write it to file
+            masterDeck = new Deck("(none)");
+            List<Deck> filePackage = new ArrayList<Deck>();
+            filePackage.add(masterDeck);
+            masterDeckManager.writeObjectsToFile(filePackage);
+        } else {
+            // already exists, just read it
+            masterDeck = masterDeckManager.readObjectsFromFile().get(0);
+        }
+        
         // set navigation between fragments
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.activity_main_navigator_container);
         NavController navController = navHostFragment.getNavController();

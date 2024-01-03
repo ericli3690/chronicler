@@ -34,6 +34,11 @@ public class FileManager<T> {
         this.gson = builder.create();
     }
 
+    // checks if the file already exists
+    public boolean wasCreatedAlready() {
+        return file.isFile();
+    }
+
     // fires whenever an error occurs
     // a standard error message
     private void onError(int code) {

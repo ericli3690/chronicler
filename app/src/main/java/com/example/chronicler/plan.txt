@@ -1,9 +1,15 @@
 IMPORTANT THINGS
-- delete deck
+- delete-deck confirmation message
 
 RANDOM STUFF
-- add delete button to addeditfragment
 - filemanager writing an array has never been tested
 
 FINALS
 - handle all todos
+
+NOTES
+- if a safeargs error happens again:
+    - delete all actions in the navgraph visual ui
+    - rebuild
+    - reconnect all actions in the navgraph visual ui
+    - rebuild

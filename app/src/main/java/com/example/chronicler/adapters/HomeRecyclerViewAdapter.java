@@ -27,16 +27,16 @@ public class HomeRecyclerViewAdapter extends RecyclerView.Adapter<HomeRecyclerVi
     // instance vars
     private SubDeckRowBinding binding;
     private final Deck rootDeck;
-    private final Deck MASTER_DECK;
+    private final Deck masterDeck;
     private final Context context;
     private final Activity activity;
     private final HomeFragment fragment;
 
     // constructor
-    public HomeRecyclerViewAdapter(Deck rootDeck, Deck MASTER_DECK, Context context, Activity activity, HomeFragment fragment) {
+    public HomeRecyclerViewAdapter(Deck rootDeck, Deck masterDeck, Context context, Activity activity, HomeFragment fragment) {
         // vital information about contents
         this.rootDeck = rootDeck;
-        this.MASTER_DECK = MASTER_DECK;
+        this.masterDeck = masterDeck;
         // important enclosing information
         this.context = context;
         this.activity = activity;
@@ -56,13 +56,13 @@ public class HomeRecyclerViewAdapter extends RecyclerView.Adapter<HomeRecyclerVi
             public void onClick(View view) {
                 // which deck was clicked; get its position in the flattenedlist
                 Deck deck = rootDeck.children.get(viewHolder.getBindingAdapterPosition());
-                List<Deck> flattenedList = MASTER_DECK.getFlattenedList();
+                List<Deck> flattenedList = masterDeck.getFlattenedList();
                 int deckIndex = flattenedList.indexOf(deck);
                 // find the clicked deck's parent; get its position in the flattened list
-                List<Integer> parentPointers = MASTER_DECK.getHierarchy();
+                List<Integer> parentPointers = masterDeck.getHierarchy();
                 Integer parentIndex = parentPointers.get(deckIndex); // returns an Integer
                 // transition to edit screen with this info
-                HomeFragmentDirections.ActionHomeFragmentToAddEditDeckFragment action = HomeFragmentDirections.actionHomeFragmentToAddEditDeckFragment(false, deckIndex, parentIndex);
+                HomeFragmentDirections.ActionHomeFragmentToDeckFragment action = HomeFragmentDirections.actionHomeFragmentToDeckFragment(deckIndex, parentIndex);
                 NavHostFragment.findNavController(fragment).navigate(action);
             }
         });
@@ -87,7 +87,7 @@ public class HomeRecyclerViewAdapter extends RecyclerView.Adapter<HomeRecyclerVi
         // set divider
         childrenRv.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
         // set adapter
-        childrenRv.setAdapter(new HomeRecyclerViewAdapter(childDeck, MASTER_DECK, context, activity, fragment));
+        childrenRv.setAdapter(new HomeRecyclerViewAdapter(childDeck, masterDeck, context, activity, fragment));
     }
 
     // required method implementation

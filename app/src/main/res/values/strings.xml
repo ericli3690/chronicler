@@ -6,7 +6,5 @@
     <string name="parent_deck_colon">Parent Deck:</string>
     <string name="done">Done</string>
     <string name="delete">Delete</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="loading_ellipsis">Loading...</string>
+    <string name="loading_ellipsis">Loading…</string>
 </resources>

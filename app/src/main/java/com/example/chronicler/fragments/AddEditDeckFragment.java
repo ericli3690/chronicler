@@ -90,7 +90,8 @@ public class AddEditDeckFragment extends Fragment {
         }
 
         // set toolbar
-        ((Toolbar) requireActivity().findViewById(R.id.activity_main_toolbar)).setTitle(this.isNew ? "Add Deck" : "Edit Deck");
+        ((Toolbar) requireActivity().findViewById(R.id.activity_main_toolbar)).setTitle(
+                this.isNew ? "Add Deck" : "Edit Deck: " + flattenedList.get(this.deckIndex).name);
 
         //// set text and selected
         if (isNew) {

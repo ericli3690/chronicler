@@ -12,7 +12,7 @@ public class Deck {
     // instance vars
     public String name;
     public List<Deck> children;
-    public List<Card> cards;
+    public CardHeap cards;
     public int highScore;
     public int highStreak;
 
@@ -31,9 +31,41 @@ public class Deck {
     public Deck(String name) {
         this.name = name;
         this.children = new ArrayList<Deck>();
-        this.cards = new ArrayList<Card>();
+        this.cards = new CardHeap();
         this.highScore = 0;
         this.highStreak = 0;
+
+        // TESTING CODE
+        this.cards.add(new Card(
+                "Event 1",
+                new CardDate(4, 4, 1984),
+                "Info info info.",
+                new ArrayList<String>()
+        ));
+        this.cards.add(new Card(
+                "Event 2",
+                new CardDate(4, 4, 1988),
+                "Info info info.",
+                new ArrayList<String>()
+        ));
+        this.cards.add(new Card(
+                "Event 3",
+                new CardDate(4, 3, 1988),
+                "Info info info.",
+                new ArrayList<String>()
+        ));
+        this.cards.add(new Card(
+                "Event 4",
+                new CardDate(5, 3, 1988),
+                "Info info info.",
+                new ArrayList<String>()
+        ));
+        this.cards.add(new Card(
+                "Event 5",
+                new CardDate(5, 3, 1988),
+                "Info info info.",
+                new ArrayList<String>()
+        ));
     }
 
     public void doSortChildren() {
@@ -105,21 +137,19 @@ public class Deck {
         }
     }
 
-//    public List<Deck> getParentsOfChild(Deck childToFind) {
-//        List<Deck> parents = new ArrayList<Deck>();
-//        if (this == childToFind) {
-//            parents.add(this);
-//            return parents;
-//        }
-//        for (Deck child : this.children) {
-//            parents = child.getParentsOfChild(childToFind);
-//            if (parents.size() > 0) {
-//                parents.add(this);
-//            } // else do nothing
-//        }
-//        return parents;
-//    }
+    public CardHeap getAllCards() {
+        return new CardHeap(this.collectCardHeaps());
+    }
 
-    // TODO: getAllCards, cards as heap
+    private List<CardHeap> collectCardHeaps() {
+        List<CardHeap> cardHeaps = new ArrayList<CardHeap>();
+        cardHeaps.add(this.cards);
+        for (Deck child : children) {
+            cardHeaps.addAll(
+                    child.collectCardHeaps()
+            );
+        }
+        return cardHeaps;
+    }
 
 }

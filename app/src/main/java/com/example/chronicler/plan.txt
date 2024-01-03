@@ -1,10 +1,12 @@
-IMPORTANT THINGS
-- delete-deck confirmation message
+CURRERNT
+-
 
-RANDOM STUFF
-- filemanager writing an array has never been tested
+REMAINING
+- settings menu
+- styling
+    - <item name="android:homeAsUpIndicator">@drawable/back_button_image</item> in themes
 
-FINALS
+FINAL
 - handle all todos
 
 NOTES
@@ -13,3 +15,4 @@ NOTES
     - rebuild
     - reconnect all actions in the navgraph visual ui
     - rebuild
+- filemanager writing an array has never been tested

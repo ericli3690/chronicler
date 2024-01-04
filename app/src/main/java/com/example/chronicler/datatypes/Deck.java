@@ -6,6 +6,7 @@ import com.example.chronicler.functions.Sorter;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 
 public class Deck {
@@ -40,31 +41,31 @@ public class Deck {
                 "Event 1",
                 new CardDate(4, 4, 1984),
                 "Info info info.",
-                new ArrayList<String>()
+                new HashSet<String>()
         ));
         this.cards.add(new Card(
                 "Event 2",
                 new CardDate(4, 4, 1988),
                 "Info info info.",
-                new ArrayList<String>()
+                new HashSet<String>()
         ));
         this.cards.add(new Card(
                 "Event 3",
                 new CardDate(4, 3, 1988),
                 "Info info info.",
-                new ArrayList<String>()
+                new HashSet<String>()
         ));
         this.cards.add(new Card(
                 "Event 4",
                 new CardDate(5, 3, 1988),
                 "Info info info.",
-                new ArrayList<String>()
+                new HashSet<String>()
         ));
         this.cards.add(new Card(
                 "Event 5",
                 new CardDate(5, 3, 1988),
                 "Info info info.",
-                new ArrayList<String>()
+                new HashSet<String>()
         ));
     }
 
@@ -119,8 +120,8 @@ public class Deck {
         return toReturn;
     }
 
-    // get a list of pointers to parents
-    // masterDeck.getFlattenedList().indexOf(masterDeck.getHierarchy().get(child)) = parent
+    // get a list of pointers to parents, SUCH THAT:
+    //      masterDeck.getFlattenedList().indexOf(masterDeck.getHierarchy().get(child)) = parent
     private void hierarchy(int parentLocation, List<Integer> toReturn) {
         // a depth first search of the deck tree
         toReturn.add(parentLocation); // at this deck's position, insert data pointing to its parent location
@@ -150,6 +151,28 @@ public class Deck {
             );
         }
         return cardHeaps;
+    }
+
+    public Deck getDeckContainingCard(Card cardToFind) {
+        // assumes the card is located somewhere in this deck's children
+        // first, check itself
+        for (Card card : cards) {
+            if (card == cardToFind) {
+                return this;
+            }
+        }
+        // still here? then the children decks must contain it
+        for (Deck child : children) {
+            // does it contain it?
+            Deck childReturn = child.getDeckContainingCard((cardToFind));
+            if (childReturn != null) {
+                // if so then pass it up!
+                return childReturn;
+            }
+        }
+        // did not contain it, nor did its children contain it
+        // a parallel process must contain it, this is a dead end of the tree
+        return null;
     }
 
 }

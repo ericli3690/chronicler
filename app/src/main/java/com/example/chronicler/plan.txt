@@ -1,12 +1,15 @@
 CURRERNT
--
+- try entering a ton of text into the search bar
 
 REMAINING
+- if we ever use anyDeck.cards.getChronologicalList().indexOf(i), write a binary search algorithm
 - settings menu
+- opening tutorial dialog
 - styling
     - <item name="android:homeAsUpIndicator">@drawable/back_button_image</item> in themes
 
 FINAL
+- document all code
 - handle all todos
 
 NOTES

@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentResultListener;
 import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 
@@ -22,6 +23,7 @@ import com.example.chronicler.MainActivity;
 import com.example.chronicler.R;
 import com.example.chronicler.databinding.FragmentAddEditDeckBinding;
 import com.example.chronicler.datatypes.Deck;
+import com.example.chronicler.functions.DeleteConfirmation;
 import com.example.chronicler.functions.FileManager;
 import com.example.chronicler.fragments.AddEditDeckFragmentDirections.ActionAddEditDeckFragmentToDeckFragment;
 import com.example.chronicler.fragments.AddEditDeckFragmentDirections.ActionAddEditDeckFragmentToHomeFragment;
@@ -39,17 +41,30 @@ public class AddEditDeckFragment extends Fragment {
     private int parentIndex;
     private FileManager<Deck> masterDeckManager;
     private Deck masterDeck;
+    private int checkedIndex;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        // handle binding
+        binding = FragmentAddEditDeckBinding.inflate(inflater, container, false);
+        return binding.getRoot();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
         // retrieve arguments from bundle
         this.isNew = AddEditDeckFragmentArgs.fromBundle(getArguments()).getIsNew();
         this.deckIndex = AddEditDeckFragmentArgs.fromBundle(getArguments()).getDeckIndex();
         this.parentIndex = AddEditDeckFragmentArgs.fromBundle(getArguments()).getParentIndex();
+
         // grab data
         masterDeckManager = ((MainActivity) requireActivity()).masterDeckManager;
         masterDeck = ((MainActivity) requireActivity()).masterDeck;
+        List<Deck> flattenedList = masterDeck.getFlattenedList();
+
         // set back button
         requireActivity().getOnBackPressedDispatcher().addCallback(requireActivity(), new OnBackPressedCallback(true) {
             @Override
@@ -64,14 +79,6 @@ public class AddEditDeckFragment extends Fragment {
                 this.setEnabled(false);
             }
         });
-        // handle binding
-        binding = FragmentAddEditDeckBinding.inflate(inflater, container, false);
-        return binding.getRoot();
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
 
         // set delete button visibility
         if (isNew) {
@@ -80,59 +87,70 @@ public class AddEditDeckFragment extends Fragment {
 
         //// create parent deck list
         // generate programmatically from flattened list
-        List<RadioButton> radios = new ArrayList<RadioButton>();
-        List<Deck> flattenedList = masterDeck.getFlattenedList();
+        // and put in the radiolistfragment
+        Bundle radioListBundle = new Bundle();
+
+        // get names
+        ArrayList<String> names = new ArrayList<String>();
         for (Deck deck : flattenedList) {
-            RadioButton radioButton = new RadioButton(requireContext());
-            radioButton.setText(deck.name);
-            radios.add(radioButton);
-            binding.fragmentAddEditDeckRadioGroup.addView(radioButton);
+            names.add(deck.name);
         }
+        radioListBundle.putStringArrayList("names", names);
+
+        // get selected
+        if (isNew) {
+            binding.fragmentAddEditDeckName.setText(R.string.new_deck);
+            // save it and show it in the radio list
+            radioListBundle.putInt("checked", 0);
+            this.checkedIndex = 0;
+        } else {
+            binding.fragmentAddEditDeckName.setText(flattenedList.get(this.deckIndex).name);
+            // likewise
+            radioListBundle.putInt("checked", this.parentIndex);
+            this.checkedIndex = this.parentIndex;
+        }
+
+        // activate the subfragment
+        requireActivity().getSupportFragmentManager().beginTransaction()
+                .setReorderingAllowed(true)
+                .add(R.id.fragment_add_edit_deck_radio_list, RadioListFragment.class, null)
+                .commit();
+
+        // listen to if it replies with a change in which was checked
+        // if so, save it, to be used when done is pressed
+        getParentFragmentManager().setFragmentResultListener("key", this, new FragmentResultListener() {
+            @Override
+            public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
+                checkedIndex = result.getInt("checked");
+            }
+        });
 
         // set toolbar
         ((Toolbar) requireActivity().findViewById(R.id.activity_main_toolbar)).setTitle(
                 this.isNew ? "Add Deck" : "Edit Deck: " + flattenedList.get(this.deckIndex).name);
 
-        //// set text and selected
-        if (isNew) {
-            binding.fragmentAddEditDeckName.setText(R.string.new_deck);
-            radios.get(0).setChecked(true);
-        } else {
-            binding.fragmentAddEditDeckName.setText(flattenedList.get(this.deckIndex).name);
-            radios.get(this.parentIndex).setChecked(true);
-        }
-
         //// delete button onclick
-        binding.fragmentAddEditDeckDelete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // double check with confirmation message
-                Snackbar deleteConfirmation = Snackbar.make(
-                        view,
-                        "Are you sure?",
-                        BaseTransientBottomBar.LENGTH_SHORT
-                );
-                deleteConfirmation.setAction("Confirm Deletion", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        // sever the child from the tree
-                        Deck parent = flattenedList.get(parentIndex);
-                        Deck child = flattenedList.get(deckIndex);
-                        parent.children.remove(child);
-                        // write to file
-                        masterDeck.doSortChildren(); // sort alphabetically by name
-                        List<Deck> filePackage = new ArrayList<Deck>();
-                        filePackage.add(masterDeck);
-                        masterDeckManager.writeObjectsToFile(filePackage);
-                        // navigate back two screens
-                        ActionAddEditDeckFragmentToHomeFragment action = AddEditDeckFragmentDirections.actionAddEditDeckFragmentToHomeFragment(false);
-                        NavHostFragment.findNavController(AddEditDeckFragment.this).navigate(action);
-                    }
-                });
-                deleteConfirmation.setActionTextColor(ContextCompat.getColor(requireContext(), R.color.red));
-                deleteConfirmation.show();
-            }
-        });
+        // include a confirmation message
+        binding.fragmentAddEditDeckDelete.setOnClickListener(new DeleteConfirmation(
+            new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    // sever the child from the tree
+                    Deck parent = flattenedList.get(parentIndex);
+                    Deck child = flattenedList.get(deckIndex);
+                    parent.children.remove(child);
+                    // sort alphabetically by name
+                    masterDeck.doSortChildren();
+                    // write to file
+                    masterDeckManager.writeSingleObjectToFile(masterDeck);
+                    // navigate back two screens
+                    NavHostFragment.findNavController(AddEditDeckFragment.this).navigate(
+                            AddEditDeckFragmentDirections.actionAddEditDeckFragmentToHomeFragment(false)
+                    );
+                }
+            },
+            requireContext()
+        ));
 
         //// done button onclick
         binding.fragmentAddEditDeckDone.setOnClickListener(new View.OnClickListener() {
@@ -141,10 +159,7 @@ public class AddEditDeckFragment extends Fragment {
                 // get name
                 String name = binding.fragmentAddEditDeckName.getText().toString();
                 // get clicked parent deck
-                int radioId = binding.fragmentAddEditDeckRadioGroup.getCheckedRadioButtonId();
-                View radioButton = binding.fragmentAddEditDeckRadioGroup.findViewById(radioId);
-                int radioIndex = binding.fragmentAddEditDeckRadioGroup.indexOfChild(radioButton);
-                Deck parentDeck = flattenedList.get(radioIndex);
+                Deck parentDeck = flattenedList.get(checkedIndex);
                 Deck childDeck;
                 // add or edit?
                 if (isNew) {
@@ -172,10 +187,9 @@ public class AddEditDeckFragment extends Fragment {
                     flattenedList.get(parentIndex).children.remove(childDeck);
                 }
                 // write to file
-                masterDeck.doSortChildren(); // sort alphabetically by name
-                List<Deck> filePackage = new ArrayList<Deck>();
-                filePackage.add(masterDeck);
-                masterDeckManager.writeObjectsToFile(filePackage);
+                masterDeck.doSortChildren();
+                // sort alphabetically by name
+                masterDeckManager.writeSingleObjectToFile(masterDeck);
                 // get indices
                 List<Deck> flattenedList = masterDeck.getFlattenedList();
                 deckIndex = flattenedList.indexOf(childDeck);

@@ -38,9 +38,7 @@ public class MainActivity extends AppCompatActivity {
             // does the master deck NOT exist?
             // if so create it and write it to file
             masterDeck = new Deck("(none)");
-            List<Deck> filePackage = new ArrayList<Deck>();
-            filePackage.add(masterDeck);
-            masterDeckManager.writeObjectsToFile(filePackage);
+            masterDeckManager.writeSingleObjectToFile(masterDeck);
         } else {
             // already exists, just read it
             masterDeck = masterDeckManager.readObjectsFromFile().get(0);

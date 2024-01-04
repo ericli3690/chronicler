@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 
+import com.example.chronicler.datatypes.Deck;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
@@ -73,6 +74,12 @@ public class FileManager<T> {
         } catch (IOException e) {
             this.onError(0);
         }
+    }
+
+    public void writeSingleObjectToFile(T object) {
+        List<T> filePackage = new ArrayList<T>();
+        filePackage.add(object);
+        this.writeObjectsToFile(filePackage);
     }
 
     public List<T> readObjectsFromFile() {

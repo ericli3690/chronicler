@@ -28,13 +28,10 @@ import java.util.List;
 public class HomeFragment extends Fragment {
 
     private FragmentHomeBinding binding;
-    private Deck masterDeck;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        // grab data
-        masterDeck = ((MainActivity) requireActivity()).masterDeck;
         // handle binding
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         return binding.getRoot();
@@ -43,6 +40,9 @@ public class HomeFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        // grab data
+        Deck masterDeck = ((MainActivity) requireActivity()).masterDeck;
 
         // set title
         ((Toolbar) requireActivity().findViewById(R.id.activity_main_toolbar)).setTitle("Chronicler");
@@ -54,7 +54,8 @@ public class HomeFragment extends Fragment {
         // set divider
         deckRv.addItemDecoration(new DividerItemDecoration(deckRv.getContext(), DividerItemDecoration.VERTICAL));
         // set adapter
-        deckRv.setAdapter(new HomeRecyclerViewAdapter(masterDeck, masterDeck, requireContext(), requireActivity(), this));
+        HomeRecyclerViewAdapter adapter = new HomeRecyclerViewAdapter(masterDeck, masterDeck, requireContext(), requireActivity(), this);
+        deckRv.setAdapter(adapter);
 
         // set onclicks
         binding.fragmentHomeButton.setOnClickListener(new View.OnClickListener() {

@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="15dp"
+    android:padding="16dp"
     tools:context=".fragments.AddEditDeckFragment">
 
     <LinearLayout
@@ -26,7 +25,6 @@
             android:id="@+id/fragment_add_edit_deck_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ems="10"
             android:textSize="25sp"
             android:inputType="text"
             android:textColor="@color/grey"
@@ -50,15 +48,10 @@
         android:layout_above="@id/fragment_add_edit_deck_divider"
         android:layout_below="@+id/fragment_add_edit_deck_linear">
 
-            <RadioGroup
-                android:id="@+id/fragment_add_edit_deck_radio_group"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <!--        radio buttons will be generated programmatically here -->
-                <!--        should include a (none) option -->
-
-            </RadioGroup>
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/fragment_add_edit_deck_radio_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
     </ScrollView>
 

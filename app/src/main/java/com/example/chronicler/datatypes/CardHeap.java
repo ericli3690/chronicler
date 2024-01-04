@@ -1,6 +1,9 @@
 package com.example.chronicler.datatypes;
 
+import androidx.annotation.NonNull;
+
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class CardHeap extends ArrayList<Card> {
@@ -143,8 +146,16 @@ public class CardHeap extends ArrayList<Card> {
         return true; // overridden method always returns true
     }
 
+    // override addall
+    @Override
+    public boolean addAll(@NonNull Collection<? extends Card> c) {
+        super.addAll(c); // add all at end
+        buildHeap(); // rebalance
+        return true; // overridden method always returns true
+    }
+
     // return list of cards in chronological order
-    public List<Card> getFlattenedList() {
+    public List<Card> getChronologicalList() {
         List<Card> toReturn = new ArrayList<Card>();
         CardHeap temp = new CardHeap(this); // clone so the original is not deleted
         while (temp.size() > 0) { // while cards remain in it

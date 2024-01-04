@@ -60,5 +60,50 @@
         <action
             android:id="@+id/action_deckFragment_to_homeFragment"
             app:destination="@id/homeFragment" />
+        <action
+            android:id="@+id/action_deckFragment_to_timelineFragment"
+            app:destination="@id/timelineFragment" />
+        <action
+            android:id="@+id/action_deckFragment_to_addEditCardFragment"
+            app:destination="@id/addEditCardFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/timelineFragment"
+        android:name="com.example.chronicler.fragments.TimelineFragment"
+        android:label="fragment_timeline"
+        tools:layout="@layout/fragment_timeline" >
+        <action
+            android:id="@+id/action_timelineFragment_to_deckFragment"
+            app:destination="@id/deckFragment" />
+        <action
+            android:id="@+id/action_timelineFragment_to_addEditCardFragment"
+            app:destination="@id/addEditCardFragment" />
+        <argument
+            android:name="deckIndex"
+            app:argType="integer" />
+        <argument
+            android:name="parentIndex"
+            app:argType="integer" />
+    </fragment>
+    <fragment
+        android:id="@+id/addEditCardFragment"
+        android:name="com.example.chronicler.fragments.AddEditCardFragment"
+        android:label="fragment_add_edit_card"
+        tools:layout="@layout/fragment_add_edit_card" >
+        <action
+            android:id="@+id/action_addEditCardFragment_to_deckFragment"
+            app:destination="@id/deckFragment" />
+        <action
+            android:id="@+id/action_addEditCardFragment_to_timelineFragment"
+            app:destination="@id/timelineFragment" />
+        <argument
+            android:name="deckIndex"
+            app:argType="integer" />
+        <argument
+            android:name="parentIndex"
+            app:argType="integer" />
+        <argument
+            android:name="cardIndices"
+            app:argType="string" />
     </fragment>
 </navigation>

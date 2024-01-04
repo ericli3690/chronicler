@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/sub_card_row_root">
+
+    <RelativeLayout
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginEnd="0dp"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="0dp"
+        android:background="@drawable/sub_card_row_backing"
+        app:layout_constraintDimensionRatio="H,16:9"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <CheckBox
+            android:id="@+id/sub_card_row_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:padding="8dp"
+            android:text="Click to select"/>
+
+        <ScrollView
+            android:id="@+id/sub_card_row_event_wrapper"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/sub_card_row_checkbox"
+            android:layout_above="@id/sub_card_row_date"
+            android:visibility="visible">
+
+            <TextView
+                android:id="@+id/sub_card_row_event"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="The Bombing of Pearl Harbour, which was a massive and ferocious attack on the United States of America launched by the Empire of Japan."
+                android:textAlignment="center"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:paddingHorizontal="16dp"/>
+
+        </ScrollView>
+
+        <TextView
+            android:id="@+id/sub_card_row_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="44dp"
+            android:textAlignment="center"
+            android:textSize="30sp"
+            android:visibility="visible"
+            android:text="7 December 1941" />
+<!--        text becomes ██████████ when obscured-->
+
+        <ScrollView
+            android:id="@+id/sub_card_row_info_wrapper"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/sub_card_row_checkbox"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="44dp"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/sub_card_row_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="16dp"
+                android:text="The event brought the United States of America into war agianst the Japanese Empire, leading to the latter's eventual downfall in 1945. The bombing also inflamed public opinion in America and was the final straw in overcoming the longstanding isolationist sentiment held by the American public."
+                android:textAlignment="center"
+                android:textSize="20sp" />
+
+        </ScrollView>
+
+    </RelativeLayout>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

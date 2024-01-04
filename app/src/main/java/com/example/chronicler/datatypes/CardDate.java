@@ -1,11 +1,13 @@
 package com.example.chronicler.datatypes;
 
+import androidx.annotation.NonNull;
+
 public class CardDate {
     // instance vars
-    private int day;
-    private int month;
-    private int year;
-    private static String[] monthNames = {
+    public int day;
+    public int month;
+    public int year;
+    private static final String[] monthNames = {
             "January",
             "February",
             "March",
@@ -19,6 +21,7 @@ public class CardDate {
             "November",
             "December"
     };
+    private int[] monthLengths;
 
     // constructor
     public CardDate(int day, int month, int year) {
@@ -27,7 +30,9 @@ public class CardDate {
         this.year = year;
     }
 
-    public String getDisplay() {
+    @NonNull
+    @Override
+    public String toString() {
         // future feature: can maybe add support for MDY or YMD
         // uses DMY
         return String.format(
@@ -81,6 +86,77 @@ public class CardDate {
             }
 
         }
+
+    }
+
+    public static boolean isInvalidMonth(int month) {
+        if (month < 1 || month > 12) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static boolean isInvalidDay(int day, int month, int year) {
+        // the too-low test is easy enough
+        if (day < 1) {
+            return true;
+        }
+
+        //// but is the day too high?
+
+        // calculate leap year
+        // there are far more succinct ways of writing this
+        // but i believe this shows my thinking thinking most clearly
+
+        boolean isLeapYear;
+
+        if (year % 4 == 0) {
+            // divisible by 4: its a leap year!
+            // unless... its divisble by 100?
+            if (year % 100 == 0) {
+                // divisible by 100: its NOT a leap year!
+                // unless... its divisible by 400?
+                if (year % 400 == 0) {
+                    // divisible by 400: its a leap year!
+                    isLeapYear = true;
+                } else {
+                    // apparently not; its not a leap year
+                    isLeapYear = false;
+                }
+            } else {
+                // apparently not; its a leap year
+                isLeapYear = true;
+            }
+        } else {
+            // not divisible by 4: is not a leap year
+            isLeapYear = false;
+        }
+
+        // calculate month lengths
+        int[] monthLengths = {
+                31,                             // january
+                isLeapYear ? 29 : 28,           // february
+                31,                             // march
+                30,                             // april
+                31,                             // may
+                30,                             // june
+                31,                             // july
+                31,                             // august
+                30,                             // september
+                31,                             // october
+                30,                             // november
+                31                              // december
+        };
+
+        if (day > monthLengths[month]) {
+            // too high
+            return true;
+        }
+
+        // got all the way to the end!
+        // no problems here
+        return false;
 
     }
 }

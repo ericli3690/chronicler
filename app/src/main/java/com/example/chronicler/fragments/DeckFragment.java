@@ -24,25 +24,10 @@ public class DeckFragment extends Fragment {
     private FragmentDeckBinding binding;
     private int deckIndex;
     private int parentIndex;
-    private Deck masterDeck;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // retrieve arguments from bundle
-        this.deckIndex = DeckFragmentArgs.fromBundle(getArguments()).getDeckIndex();
-        this.parentIndex = DeckFragmentArgs.fromBundle(getArguments()).getParentIndex();
-        // grab data
-        masterDeck = ((MainActivity) requireActivity()).masterDeck;
-        // set back button
-        requireActivity().getOnBackPressedDispatcher().addCallback(requireActivity(), new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                DeckFragmentDirections.ActionDeckFragmentToHomeFragment action = DeckFragmentDirections.actionDeckFragmentToHomeFragment(false);
-                NavHostFragment.findNavController(DeckFragment.this).navigate(action);
-                this.setEnabled(false);
-            }
-        });
         // handle binding
         binding = FragmentDeckBinding.inflate(inflater, container, false);
         return binding.getRoot();
@@ -51,20 +36,49 @@ public class DeckFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        // retrieve arguments from bundle
+        this.deckIndex = DeckFragmentArgs.fromBundle(getArguments()).getDeckIndex();
+        this.parentIndex = DeckFragmentArgs.fromBundle(getArguments()).getParentIndex();
+        // grab data
+        Deck masterDeck = ((MainActivity) requireActivity()).masterDeck;
+
         //// get deck name
         // get the deck
         Deck deck = masterDeck.getFlattenedList().get(this.deckIndex);
         // set toolbar
-        ((Toolbar) requireActivity().findViewById(R.id.activity_main_toolbar)).setTitle(deck.name);
+        ((Toolbar) requireActivity().findViewById(R.id.activity_main_toolbar)).setTitle(
+                "Deck: " + deck.name
+        );
         // set name
         binding.fragmentDeckName.setText(deck.name);
 
         //// onclicks
+        // back button
+        requireActivity().getOnBackPressedDispatcher().addCallback(requireActivity(), new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                NavHostFragment.findNavController(DeckFragment.this).navigate(
+                        DeckFragmentDirections.actionDeckFragmentToHomeFragment(false)
+                );
+                this.setEnabled(false);
+            }
+        });
+        // all other buttons
         binding.fragmentDeckEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DeckFragmentDirections.ActionDeckFragmentToAddEditDeckFragment action = DeckFragmentDirections.actionDeckFragmentToAddEditDeckFragment(false, deckIndex, parentIndex);
-                NavHostFragment.findNavController(DeckFragment.this).navigate(action);
+                NavHostFragment.findNavController(DeckFragment.this).navigate(
+                        DeckFragmentDirections.actionDeckFragmentToAddEditDeckFragment(false, deckIndex, parentIndex)
+                );
+            }
+        });
+        binding.fragmentDeckTimeline.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                NavHostFragment.findNavController(DeckFragment.this).navigate(
+                        DeckFragmentDirections.actionDeckFragmentToTimelineFragment(deckIndex, parentIndex)
+                );
             }
         });
     }

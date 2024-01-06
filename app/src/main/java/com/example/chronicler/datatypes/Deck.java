@@ -35,38 +35,6 @@ public class Deck {
         this.cards = new CardHeap();
         this.highScore = 0;
         this.highStreak = 0;
-
-        // TESTING CODE
-        this.cards.add(new Card(
-                "Event 1",
-                new CardDate(4, 4, 1984),
-                "Info info info.",
-                new HashSet<String>()
-        ));
-        this.cards.add(new Card(
-                "Event 2",
-                new CardDate(4, 4, 1988),
-                "Info info info.",
-                new HashSet<String>()
-        ));
-        this.cards.add(new Card(
-                "Event 3",
-                new CardDate(4, 3, 1988),
-                "Info info info.",
-                new HashSet<String>()
-        ));
-        this.cards.add(new Card(
-                "Event 4",
-                new CardDate(5, 3, 1988),
-                "Info info info.",
-                new HashSet<String>()
-        ));
-        this.cards.add(new Card(
-                "Event 5",
-                new CardDate(5, 3, 1988),
-                "Info info info.",
-                new HashSet<String>()
-        ));
     }
 
     public void doSortChildren() {

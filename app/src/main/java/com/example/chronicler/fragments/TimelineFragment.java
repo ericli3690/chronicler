@@ -82,6 +82,17 @@ public class TimelineFragment extends Fragment {
             public void onClick(View view) {
                 // get search term
                 String searchTerm = binding.fragmentTimelineSearchBar.getText().toString();
+//                // uncheck all checkboxes
+//                for (int cardIndex = 0; cardIndex < cardRv.getChildCount(); cardIndex++) {
+//                    // get each viewholder
+//                    TimelineRecyclerViewAdapter.ViewHolder viewHolder =
+//                            (TimelineRecyclerViewAdapter.ViewHolder)
+//                                    cardRv.getChildViewHolder(
+//                                            cardRv.getChildAt(cardIndex)
+//                                    );
+//                    // uncheck them
+//                    viewHolder.checkBox.setChecked(false);
+//                }
                 // only show those that contain it
                 adapter.hideAllWithoutSearchTerm(searchTerm);
             }
@@ -90,21 +101,9 @@ public class TimelineFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 // get all that are selected
-                List<Integer> selectedCardIndices = new ArrayList<Integer>();
-                for (int cardIndex = 0; cardIndex < cardRv.getChildCount(); cardIndex++) {
-                    // get each viewholder
-                    TimelineRecyclerViewAdapter.ViewHolder viewHolder =
-                            (TimelineRecyclerViewAdapter.ViewHolder)
-                                    cardRv.getChildViewHolder(
-                                            cardRv.getChildAt(cardIndex)
-                                    );
-                    // if its checked, save the index
-                    if (viewHolder.checkBox.isChecked()) {
-                        selectedCardIndices.add(cardIndex);
-                    }
-                }
-                // if empty, break and log an error
-                if (selectedCardIndices.size() == 0) {
+                List<Integer> checkedCardIndices = adapter.checkedCardIndices;
+                // check that at least one is selected
+                if (checkedCardIndices.size() == 0) {
                     // none were selected
                     Snackbar.make( // show error message
                             requireActivity().findViewById(android.R.id.content), // get root
@@ -116,7 +115,7 @@ public class TimelineFragment extends Fragment {
                 // else were are confident that there is at least one index selected
                 // package the indices up as a string
                 List<String> indicesStringList = new ArrayList<String>();
-                for (Integer cardIndex : selectedCardIndices) {
+                for (Integer cardIndex : checkedCardIndices) {
                     indicesStringList.add(Integer.toString(cardIndex));
                 }
                 String indicesString = String.join(" ", indicesStringList);

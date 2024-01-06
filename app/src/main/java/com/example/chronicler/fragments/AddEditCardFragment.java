@@ -17,6 +17,7 @@ import com.example.chronicler.MainActivity;
 import com.example.chronicler.R;
 import com.example.chronicler.databinding.FragmentAddEditCardBinding;
 import com.example.chronicler.datatypes.Card;
+import com.example.chronicler.datatypes.CardChronologicalList;
 import com.example.chronicler.datatypes.CardDate;
 import com.example.chronicler.datatypes.Deck;
 import com.example.chronicler.functions.DeleteConfirmation;
@@ -73,7 +74,7 @@ public class AddEditCardFragment extends Fragment {
         List<Deck> flattenedList = masterDeck.getFlattenedList();
 
         Deck deck = flattenedList.get(deckIndex);
-        List<Card> deckCards = deck.getAllCards().getChronologicalList();
+        CardChronologicalList deckCards = deck.getAllCards().getChronologicalList();
 
         //// if is add card
         if (cardIndices.length() == 0) {
@@ -114,8 +115,19 @@ public class AddEditCardFragment extends Fragment {
                     deck.cards.add(newCard);
                     // write to file
                     masterDeckManager.writeSingleObjectToFile(masterDeck);
-                    // reload fragment so more cards can be added
-                    reloadFragment();
+                    // clear all textviews
+                    binding.fragmentAddEditCardEvent.setText("");
+                    binding.fragmentAddEditCardDay.setText("");
+                    binding.fragmentAddEditCardMonth.setText("");
+                    binding.fragmentAddEditCardYear.setText("");
+                    binding.fragmentAddEditCardInfo.setText("");
+                    binding.fragmentAddEditCardTags.setText("");
+                    // send success message
+                    Snackbar.make(
+                            requireActivity().findViewById(android.R.id.content), // get root
+                            "Card created!",
+                            BaseTransientBottomBar.LENGTH_SHORT
+                    ).show(); // immediately show
                 }
             });
 
@@ -168,10 +180,17 @@ public class AddEditCardFragment extends Fragment {
 
                 // set text
                 binding.fragmentAddEditCardEvent.setText(card.event);
-                binding.fragmentAddEditCardDay.setText(card.date.day);
-                binding.fragmentAddEditCardMonth.setText(card.date.month);
-                binding.fragmentAddEditCardYear.setText(card.date.year);
+
+                int intDay = card.date.day;
+                int intMonth = card.date.month;
+                int intYear = card.date.year;
+
+                binding.fragmentAddEditCardDay.setText(intDay != -1 ? String.valueOf(intDay) : "");
+                binding.fragmentAddEditCardMonth.setText(intMonth != -1 ? String.valueOf(intMonth) : "");
+                binding.fragmentAddEditCardYear.setText(intYear != -1 ? String.valueOf(intYear) : "");
+
                 binding.fragmentAddEditCardInfo.setText(card.info);
+
                 binding.fragmentAddEditCardTags.setText(
                         String.join(" ", card.tags)
                 );
@@ -180,6 +199,15 @@ public class AddEditCardFragment extends Fragment {
                 binding.fragmentAddEditCardDone.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        // first of all, dont let them put cards in the masterdeck
+                        if (checkedIndex == 0) {
+                            Snackbar.make(
+                                    requireActivity().findViewById(android.R.id.content), // get root
+                                    "Cards must have a parent deck.",
+                                    BaseTransientBottomBar.LENGTH_SHORT
+                            ).show(); // immediately show
+                            return; // break out
+                        }
                         Card newCard;
                         try {
                             newCard = getCardFromInputs(); // abstracted away so that add can also use it
@@ -187,7 +215,7 @@ public class AddEditCardFragment extends Fragment {
                             // the date was entered incorrectly
                             Snackbar.make(
                                     requireActivity().findViewById(android.R.id.content), // get root
-                                    "The dates entered are invalid.",
+                                    "The date entered is invalid.",
                                     BaseTransientBottomBar.LENGTH_SHORT
                             ).show(); // immediately show
                             return; // break out
@@ -214,13 +242,17 @@ public class AddEditCardFragment extends Fragment {
                 // show all the tags that all the cards selected have in common
                 Set<String> commonTags = new HashSet<String>();
                 for (String tag : cards.get(0).tags) {
-                    for (Card card : cards) {
-                        if (!card.tags.contains(tag)) {
+                    for (int cardIndex = 0; cardIndex < cards.size(); cardIndex++) {
+                        if (cards.get(cardIndex).tags.contains(tag)) {
+                            if (cardIndex == cards.size()-1) {
+                                commonTags.add(tag);
+                            } else {
+                                continue;
+                            }
+                        } else {
                             break;
                         }
                     }
-                    // if we get here, then this tag exists in ALL these cards
-                    commonTags.add(tag);
                 }
                 // yes, this is a nested loop, which is inefficient
                 // but on average it should perform ok, as
@@ -237,6 +269,15 @@ public class AddEditCardFragment extends Fragment {
                 binding.fragmentAddEditCardDone.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        // first of all, dont let them put cards in the masterdeck
+                        if (checkedIndex == 0) {
+                            Snackbar.make(
+                                    requireActivity().findViewById(android.R.id.content), // get root
+                                    "Cards must have a parent deck.",
+                                    BaseTransientBottomBar.LENGTH_SHORT
+                            ).show(); // immediately show
+                            return; // break out
+                        }
                         // get tags
                         String[] stringArrayTags = binding.fragmentAddEditCardTags.getText().toString().split(" ");
                         // put tags into a hashset
@@ -266,12 +307,12 @@ public class AddEditCardFragment extends Fragment {
             // activate the subfragment
             requireActivity().getSupportFragmentManager().beginTransaction()
                     .setReorderingAllowed(true)
-                    .add(R.id.fragment_add_edit_card_radio_list, RadioListFragment.class, null)
+                    .add(R.id.fragment_add_edit_card_radio_list, RadioListFragment.class, radioListBundle)
                     .commit();
 
             // listen to if it replies with a change in which was checked
             // if so, save it, to be used when done is pressed
-            getParentFragmentManager().setFragmentResultListener("key", this, new FragmentResultListener() {
+            requireActivity().getSupportFragmentManager().setFragmentResultListener("key", this, new FragmentResultListener() {
                 @Override
                 public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
                     checkedIndex = result.getInt("checked");
@@ -356,14 +397,6 @@ public class AddEditCardFragment extends Fragment {
         Collections.addAll(tags, stringArrayTags);
         // make it into a new card and add it to the cards of the deck currently opened
         return new Card(event, date, info, tags);
-    }
-
-    private void reloadFragment() {
-        requireActivity().getSupportFragmentManager().beginTransaction()
-                .setReorderingAllowed(false) // telling android: dont you dare optimize this!
-                .detach(this)
-                .attach(this)
-                .commit();
     }
 
     private void writeAndReturnToTimeline() {

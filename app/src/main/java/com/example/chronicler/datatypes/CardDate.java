@@ -36,10 +36,11 @@ public class CardDate {
         // future feature: can maybe add support for MDY or YMD
         // uses DMY
         return String.format(
-                "%s %s %s",
-                day,
-                monthNames[month-1], // taking account of the fact that month will be stored as 1-12 and converting that into an array index
-                year
+                "%s%s%s%s",
+                day != -1 ? day + " " : "", // if no day, dont show it
+                month != -1 ? monthNames[month-1] + " " : "", // taking account of the fact that month will be stored as 1-12 and converting that into an array index; and if there is no month, dont show it
+                Math.abs(year), // there will always be a year
+                year < 0 ? " BCE" : "" // BCE or CE
         );
     }
 
@@ -149,7 +150,7 @@ public class CardDate {
                 31                              // december
         };
 
-        if (day > monthLengths[month]) {
+        if (day > monthLengths[month-1]) {
             // too high
             return true;
         }

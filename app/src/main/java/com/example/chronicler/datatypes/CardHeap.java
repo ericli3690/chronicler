@@ -35,11 +35,13 @@ public class CardHeap extends ArrayList<Card> {
     // alternative constructor for putting multiple cardheaps together into a single cardheap
     public CardHeap(List<CardHeap> subHeaps) {
         super();
-        // meld them all together
+        // put them into a single buffer list
+        List<Card> cardsInList = new ArrayList<Card>();
         for (CardHeap subHeap : subHeaps) {
-            addAll(subHeap);
+            cardsInList.addAll(subHeap);
         }
-        buildHeap();
+        addAll(cardsInList);
+        // then push and rebalance them all at once
     }
 
     private int getLeftChildIndex(int parentIndex) {
@@ -76,7 +78,7 @@ public class CardHeap extends ArrayList<Card> {
         Card parentCard = get(getParentIndex(index));
 
         // compare child with parent
-        while (childCard.date.isLaterThan(parentCard.date) == -1) {
+        if (childCard.date.isLaterThan(parentCard.date) == -1) {
             // a return value of -1 means "no": the childCard is NOT later than the parentCard
             // ie, something is wrong, the minheap property is not preserved
             // we must swap parent and child
@@ -87,17 +89,16 @@ public class CardHeap extends ArrayList<Card> {
     }
 
     private void siftDown(int index) {
-        Card parentCard = get(index);
-        int largestIndex = index;
+        int earliestIndex = index;
         // compare to left
         int leftIndex = getLeftChildIndex(index);
         if (leftIndex < size()) { // this is a valid index
             Card leftCard = get(leftIndex);
-            if (parentCard.date.isLaterThan(leftCard.date) == 1) {
+            if (get(earliestIndex).date.isLaterThan(leftCard.date) == 1) {
                 // a return value of 1 means "yes": the parent card IS later than the left card
-                // ie, something is wrong, teh minheap property is not preserved
+                // ie, something is wrong, the minheap property is not preserved
                 // we may need to swap the parent and left
-                largestIndex = leftIndex;
+                earliestIndex = leftIndex;
             }
         }
         // unless right is EVEN larger...
@@ -105,27 +106,26 @@ public class CardHeap extends ArrayList<Card> {
         int rightIndex = getRightChildIndex(index);
         if (rightIndex < size()) {
             Card rightCard = get(rightIndex);
-            if (parentCard.date.isLaterThan(rightCard.date) == 1) {
+            if (get(earliestIndex).date.isLaterThan(rightCard.date) == 1) {
                 // by similar logic to that stated above:
-                largestIndex = rightIndex;
+                earliestIndex = rightIndex;
             }
         }
-        // if largestIndex is still equal to index, then this card is fine where it is
-        if (largestIndex == index) {
+        // if earliestIndex is still equal to index, then this card is fine where it is
+        if (earliestIndex == index) {
             return;
         }
         // else, swap and recur downwards
-        swap(index, largestIndex);
-        siftDown(largestIndex);
+        swap(index, earliestIndex);
+        siftDown(earliestIndex);
     }
 
     private void buildHeap() {
         // start from the end and go to the beginning
-        // dont need to handle the first element, so only go until siftIndex == 0
         // has a time complexity of O(n)
         // despite seeming like it should be O(nlogn) (n elements, each being inserted and costing logn time), thanks to cool math
         // source: https://www.geeksforgeeks.org/time-complexity-of-building-a-heap/
-        for (int siftIndex = size()-1; siftIndex > 0; siftIndex--) {
+        for (int siftIndex = size()-1; siftIndex >= 0; siftIndex--) {
             siftDown(siftIndex);
         }
     }
@@ -134,7 +134,9 @@ public class CardHeap extends ArrayList<Card> {
         Card toReturn = get(0); // read root
         set(0, get(size()-1)); // overwrite root
         remove(size()-1); // remove last leaf, which was copied to root
-        siftDown(0); // rebalance the tree
+        if (size() > 0) { // if theres still a tree to rebalance
+            siftDown(0); // rebalance the tree
+        }
         return toReturn; // return popped value
     }
 
@@ -148,15 +150,18 @@ public class CardHeap extends ArrayList<Card> {
 
     // override addall
     @Override
-    public boolean addAll(@NonNull Collection<? extends Card> c) {
-        super.addAll(c); // add all at end
+    public boolean addAll(@NonNull Collection<? extends Card> cards) {
+        super.addAll(cards); // add all at end
         buildHeap(); // rebalance
         return true; // overridden method always returns true
     }
 
     // return list of cards in chronological order
-    public List<Card> getChronologicalList() {
-        List<Card> toReturn = new ArrayList<Card>();
+    // uses the custon cardchronologicallist datatype i created
+    // which allows for a binary search to be performed
+    // for indexOf(), remove(), and contains()
+    public CardChronologicalList getChronologicalList() {
+        CardChronologicalList toReturn = new CardChronologicalList();
         CardHeap temp = new CardHeap(this); // clone so the original is not deleted
         while (temp.size() > 0) { // while cards remain in it
             toReturn.add(temp.popRoot());

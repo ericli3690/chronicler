@@ -63,7 +63,7 @@ public class RadioListFragment extends Fragment {
                 Bundle sendBack = new Bundle();
                 sendBack.putInt("checked", radioIndex);
                 // send it back
-                getParentFragmentManager().setFragmentResult("key", sendBack);
+                requireActivity().getSupportFragmentManager().setFragmentResult("key", sendBack);
             }
         });
     }

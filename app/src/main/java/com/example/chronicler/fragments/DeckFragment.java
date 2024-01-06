@@ -73,6 +73,15 @@ public class DeckFragment extends Fragment {
                 );
             }
         });
+        binding.fragmentDeckAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // send no card indices, thus telling it that we are adding, not editing
+                NavHostFragment.findNavController(DeckFragment.this).navigate(
+                        DeckFragmentDirections.actionDeckFragmentToAddEditCardFragment(deckIndex, parentIndex, "")
+                );
+            }
+        });
         binding.fragmentDeckTimeline.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

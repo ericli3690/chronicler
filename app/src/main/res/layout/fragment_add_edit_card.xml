@@ -39,7 +39,7 @@
                     android:textSize="25sp"
                     android:inputType="text"
                     android:textColor="@color/grey"
-                    android:text="New Event" />
+                    android:hint="" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -48,6 +48,13 @@
                     android:textSize="25sp"
                     android:textStyle="bold"
                     android:textColor="@color/black"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Year is required. Month and day are optional."
+                    android:textSize="16sp"
+                    android:textColor="@color/grey"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -98,7 +105,7 @@
                     android:id="@+id/fragment_add_edit_card_info"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="25sp"
+                    android:textSize="16sp"
                     android:textColor="@color/grey"
                     android:inputType="textMultiLine"
                     android:text="" />
@@ -113,14 +120,21 @@
                 android:textStyle="bold"
                 android:textColor="@color/black"/>
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Separate tags using spaces."
+                android:textSize="16sp"
+                android:textColor="@color/grey"/>
+
             <EditText
                 android:id="@+id/fragment_add_edit_card_tags"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="25sp"
                 android:textColor="@color/grey"
-                android:inputType="textMultiLine"
-                android:hint="Separate tags using spaces." />
+                android:inputType="text"
+                android:hint="" />
 
             <LinearLayout
                 android:id="@+id/fragment_add_edit_card_linear_edit"
@@ -169,6 +183,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/done"
+        android:backgroundTint="@color/green"
         android:layout_alignParentBottom="true"/>
 
 </RelativeLayout>

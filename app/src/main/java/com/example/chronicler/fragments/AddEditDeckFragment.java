@@ -99,7 +99,6 @@ public class AddEditDeckFragment extends Fragment {
 
         // get selected
         if (isNew) {
-            binding.fragmentAddEditDeckName.setText(R.string.new_deck);
             // save it and show it in the radio list
             radioListBundle.putInt("checked", 0);
             this.checkedIndex = 0;
@@ -113,12 +112,12 @@ public class AddEditDeckFragment extends Fragment {
         // activate the subfragment
         requireActivity().getSupportFragmentManager().beginTransaction()
                 .setReorderingAllowed(true)
-                .add(R.id.fragment_add_edit_deck_radio_list, RadioListFragment.class, null)
+                .add(R.id.fragment_add_edit_deck_radio_list, RadioListFragment.class, radioListBundle)
                 .commit();
 
         // listen to if it replies with a change in which was checked
         // if so, save it, to be used when done is pressed
-        getParentFragmentManager().setFragmentResultListener("key", this, new FragmentResultListener() {
+        requireActivity().getSupportFragmentManager().setFragmentResultListener("key", this, new FragmentResultListener() {
             @Override
             public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
                 checkedIndex = result.getInt("checked");

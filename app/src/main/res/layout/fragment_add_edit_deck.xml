@@ -28,7 +28,7 @@
             android:textSize="25sp"
             android:inputType="text"
             android:textColor="@color/grey"
-            android:text="@string/new_deck" />
+            android:hint="" />
 
         <TextView
             android:layout_width="match_parent"
@@ -76,6 +76,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/done"
+        android:backgroundTint="@color/green"
         android:layout_alignParentBottom="true"/>
 
 </RelativeLayout>

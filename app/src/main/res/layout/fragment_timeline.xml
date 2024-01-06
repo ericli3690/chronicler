@@ -31,7 +31,10 @@
             <EditText
                 android:id="@+id/fragment_timeline_search_bar"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:textSize="25sp"
+                android:inputType="text"
+                android:textColor="@color/grey"/>
 
         </LinearLayout>
 
@@ -57,6 +60,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Edit Selected Cards"
+        android:backgroundTint="@color/peach_2"
         android:layout_below="@id/fragment_timeline_divider_1" />
 
     <com.google.android.material.divider.MaterialDivider
@@ -67,17 +71,10 @@
         app:dividerColor="@color/peach_2"
         android:layout_below="@id/fragment_timeline_edit"/>
 
-    <ScrollView
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/fragment_timeline_rv"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/fragment_timeline_divider_2"
-        android:layout_alignParentBottom="true">
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/fragment_timeline_rv"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
-    </ScrollView>
+        android:layout_height="wrap_content"
+        android:layout_below="@id/fragment_timeline_divider_2"/>
 
 </RelativeLayout>

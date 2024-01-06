@@ -66,6 +66,9 @@
         <action
             android:id="@+id/action_deckFragment_to_addEditCardFragment"
             app:destination="@id/addEditCardFragment" />
+        <action
+            android:id="@+id/action_deckFragment_to_gameFragment"
+            app:destination="@id/gameFragment" />
     </fragment>
     <fragment
         android:id="@+id/timelineFragment"
@@ -84,6 +87,9 @@
         <argument
             android:name="parentIndex"
             app:argType="integer" />
+        <action
+            android:id="@+id/action_timelineFragment_to_gameFragment"
+            app:destination="@id/gameFragment" />
     </fragment>
     <fragment
         android:id="@+id/addEditCardFragment"
@@ -105,5 +111,23 @@
         <argument
             android:name="cardIndices"
             app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/gameFragment"
+        android:name="com.example.chronicler.fragments.GameFragment"
+        android:label="fragment_game"
+        tools:layout="@layout/fragment_game" >
+        <action
+            android:id="@+id/action_gameFragment_to_deckFragment"
+            app:destination="@id/deckFragment" />
+        <action
+            android:id="@+id/action_gameFragment_to_timelineFragment"
+            app:destination="@id/timelineFragment" />
+        <argument
+            android:name="deckIndex"
+            app:argType="integer" />
+        <argument
+            android:name="parentIndex"
+            app:argType="integer" />
     </fragment>
 </navigation>

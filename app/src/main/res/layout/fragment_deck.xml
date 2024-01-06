@@ -50,6 +50,7 @@
             android:id="@+id/fragment_deck_timeline"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:backgroundTint="@color/peach_2"
             android:text="View Timeline"/>
 
         <Button

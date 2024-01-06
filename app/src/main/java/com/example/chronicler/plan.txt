@@ -2,6 +2,7 @@ CURRERNT
 - the game
     - (distance algorithm)
     - (game algorithm)
+    - icons are unclickable?
 
 REMAINING
 - import menu

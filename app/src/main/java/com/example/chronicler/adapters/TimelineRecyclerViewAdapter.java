@@ -28,8 +28,6 @@ import java.util.List;
 
 public abstract class TimelineRecyclerViewAdapter extends RecyclerView.Adapter<TimelineRecyclerViewAdapter.ViewHolder> {
 
-    // TODO REMOVE THIS OR BREAK IT APART ACROSS THE SUBCLASSES
-    // TODO CREATE A SUBCLASS TREE root to chronological and game, chronological into full and partial
     // there are three different ways this class can be used
     // 1. the chronological list that appears after the deck menu
     //      permits searching
@@ -50,11 +48,21 @@ public abstract class TimelineRecyclerViewAdapter extends RecyclerView.Adapter<T
     //      cards is the gameorder list
     //      renderedcards shows two cards in the gameorder list at a time
 
+    // these are implemented as this abstract class's children; see inheritance structure below
+    // abstract classes are in uppercase
+    //
+    //          TIMELINE --- game
+    //           |
+    //          CHRONOLOGICAL --- partial
+    //           |
+    //          full
+    //
+
     // instance vars
     private SubCardRowBinding binding;
 
     // empty dummy constructor
-    // this class is mainly to keep viewholder stuff all together
+    // after all, this abstract class is mainly to keep viewholder stuff all together
     public TimelineRecyclerViewAdapter() {}
 
     @NonNull

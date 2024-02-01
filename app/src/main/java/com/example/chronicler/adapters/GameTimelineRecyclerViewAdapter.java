@@ -15,35 +15,25 @@ import java.util.List;
 
 public class GameTimelineRecyclerViewAdapter extends TimelineRecyclerViewAdapter {
 
-    private List<Card> cards;
-    private List<Card> renderedCards;
-    private boolean obscure;
-    private int currentObscured;
-    private List<Card> flippedCards;
+    public List<Card> cards;
+    public List<Card> flippedCards;
+    public boolean obscure;
 
     public GameTimelineRecyclerViewAdapter(List<Card> cards) {
         this.cards = cards;
-        // use just the first two
-        // deckFragment guarantees these both exist
-        this.renderedCards = new ArrayList<Card>();
-        this.renderedCards.add(this.cards.get(0));
-        this.renderedCards.add(this.cards.get(1));
-        // counter
         this.obscure = true;
-        this.currentObscured = 1; // TODO maybe move this and game flow control to gamefragment
-        // flips
         this.flippedCards = new ArrayList<Card>();
     }
 
     @Override
     public int getItemCount() {
-        return renderedCards.size();
+        return cards.size();
     }
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder viewHolder, int position) {
         // get card instance associated with this viewholder
-        Card card = renderedCards.get(position);
+        Card card = cards.get(position);
         // set text
         if (this.obscure && position == 1) {
             viewHolder.eventTv.setText("██████████");
@@ -79,50 +69,9 @@ public class GameTimelineRecyclerViewAdapter extends TimelineRecyclerViewAdapter
                     flippedCards.add(card);
                 }
                 // update on screen
-                notifyItemChanged(renderedCards.indexOf(card));
+                notifyItemChanged(cards.indexOf(card));
             }
         });
-    }
-
-    public void goToNextCardInGame() {
-        // prepare variable to return
-        boolean gameState;
-        // show the obscured card for two seconds
-        this.obscure = false;
-        notifyItemChanged(1); // second item in UI should be rerendered
-        // then unshow it
-        Handler handler = new Handler(Looper.getMainLooper());
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                // try to increment to next
-                currentObscured++;
-                // if too high...
-                if (currentObscured >= cards.size()) {
-                    // game is ending
-                    return false;
-                } else {
-                    // going to next step
-                    // therefore rehide
-                    obscure = true;
-                    // move 1 to 0
-                    renderedCards.set(
-                            0,
-                            renderedCards.get(1)
-                    );
-                    // add next to 1
-                    renderedCards.set(
-                            1,
-                            cards.get(currentObscured)
-                    );
-                    // reload
-                    notifyItemChanged(0);
-                    notifyItemChanged(1);
-                    // we're still going
-                    return true;
-                }
-            }
-        }, 2000); // delay time
     }
 
 }

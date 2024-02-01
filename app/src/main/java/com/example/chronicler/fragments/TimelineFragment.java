@@ -48,7 +48,7 @@ public class TimelineFragment extends Fragment {
         // retrieve arguments from bundle
         this.deckIndex = TimelineFragmentArgs.fromBundle(getArguments()).getDeckIndex();
         this.parentIndex = TimelineFragmentArgs.fromBundle(getArguments()).getParentIndex();
-        this.allowEdit = TimelineFragmentArgs.fromBundle(getArguments()).getAllowAll();
+        this.allowEdit = TimelineFragmentArgs.fromBundle(getArguments()).getAllowEdit();
         // grab data
         Deck masterDeck = ((MainActivity) requireActivity()).masterDeck;
 

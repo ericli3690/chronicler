@@ -87,7 +87,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Relative to the first event, the second event is..."
+            android:text="The second event is..."
             android:textSize="12sp"
             android:textAlignment="center"
             android:textColor="@color/grey"/>
@@ -177,6 +177,15 @@
             </LinearLayout>
 
         </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="...the first event."
+            android:textSize="12sp"
+            android:layout_marginTop="8dp"
+            android:textAlignment="center"
+            android:textColor="@color/grey"/>
 
     </LinearLayout>
 

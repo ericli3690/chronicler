@@ -88,7 +88,7 @@ public class DeckFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 NavHostFragment.findNavController(DeckFragment.this).navigate(
-                        DeckFragmentDirections.actionDeckFragmentToTimelineFragment(deckIndex, parentIndex)
+                        DeckFragmentDirections.actionDeckFragmentToTimelineFragment(deckIndex, parentIndex, true)
                 );
             }
         });

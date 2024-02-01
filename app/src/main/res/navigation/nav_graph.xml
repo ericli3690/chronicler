@@ -93,6 +93,9 @@
         <action
             android:id="@+id/action_timelineFragment_to_gameFragment"
             app:destination="@id/gameFragment" />
+        <argument
+            android:name="allowEdit"
+            app:argType="boolean" />
     </fragment>
     <fragment
         android:id="@+id/addEditCardFragment"

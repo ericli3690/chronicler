@@ -139,7 +139,7 @@ public class AddEditCardFragment extends Fragment {
                 @Override
                 public void handleOnBackPressed() {
                     NavHostFragment.findNavController(AddEditCardFragment.this).navigate(
-                            AddEditCardFragmentDirections.actionAddEditCardFragmentToTimelineFragment(deckIndex, parentIndex)
+                            AddEditCardFragmentDirections.actionAddEditCardFragmentToTimelineFragment(deckIndex, parentIndex, true)
                     );
                     this.setEnabled(false);
                 }

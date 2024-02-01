@@ -13,6 +13,8 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,6 +41,11 @@ public class GameFragment extends Fragment {
     private FragmentGameBinding binding;
     private int deckIndex;
     private int parentIndex;
+    private List<Integer> gameOrder;
+    private int currentObscured;
+    private GameTimelineRecyclerViewAdapter adapter;
+    private CardChronologicalList chronologicalList;
+    private boolean deactivateButtons;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -57,6 +64,8 @@ public class GameFragment extends Fragment {
         // grab data
         Deck masterDeck = ((MainActivity) requireActivity()).masterDeck;
         SettingsFile settingsFile = ((MainActivity) requireActivity()).settingsFile;
+        // activate buttons
+        this.deactivateButtons = false;
 
         //// get deck name
         // get deck
@@ -93,10 +102,13 @@ public class GameFragment extends Fragment {
             }
         });
 
-        // get cards and sort them using the difficulty algorithm
-        // create one chronological list for reference and another for working and whittling down
+        // get cards
+        // create one chronological list for reference
         CardHeap allCards = deck.getAllCards();
-        CardChronologicalList chronologicalList = allCards.getChronologicalList();
+        chronologicalList = allCards.getChronologicalList();
+
+        // THE DIFFICULTY ALGORITHM
+        // create another chronological list for working and whittling down
         CardChronologicalList workingList = new CardChronologicalList(chronologicalList);
         // get difficulty
         float percentDifficulty = settingsFile.percentDifficulty;
@@ -108,7 +120,7 @@ public class GameFragment extends Fragment {
         // round it down: now difficulty stores an integer equal to approximately [percentDifficulty] of the cards
         int difficulty = (int) Math.floor(unroundedDifficulty);
         // output
-        List<Integer> gameOrder = new ArrayList<Integer>();
+        gameOrder = new ArrayList<Integer>();
         // generate a random number from 0 to # of cards
         Random random = new Random();
         int nextCardIndex = random.nextInt(chronologicalList.size());
@@ -126,19 +138,21 @@ public class GameFragment extends Fragment {
         // game order is now a list of integers that obey the difficulty rule
         // and which includes every index in the chronological list
 
-        // TODO add them to timeline: requires timeline to stop simply getting all cards in deckIndex but instead using a string of indices
-        // TODO or actually jsut pass currentobscured and it can figure it out, use -1 for show all
+        // set current
+        List<Card> initialTwo = new ArrayList<Card>();
+        // use just the first two
+        // deckFragment guarantees these both exist
+        initialTwo.add(chronologicalList.get(0));
+        initialTwo.add(chronologicalList.get(1));
+        currentObscured = 1;
 
         // TODO when we activate next card thing, deactivate all buttons on screen using a CURRENTLYDOINGSTUFF flag
 
         // TODO if we go to the timeline screen and back, this screen will reload
         // TODO undoing the gameorder algorithm and restarting the game
         // TODO we must make the game's state persist
-        // TODO also what if you can edit and delete cards in the other screen? maybe just disable this
 
-        // TODO SUPER
-        // TODO CURRENTLY TRYING TO REFACTOR THE TIMELINES APART
-        // TODO MAKE SURE TIMELINE PARTIAL IS COMPLETE IN TIMELINE FRAGMENT
+        // TODO handle game logic here or in gametimelinerecyclerviewadapter
 
         // display first two
         // get recyclerview
@@ -146,9 +160,52 @@ public class GameFragment extends Fragment {
         // set layout
         cardRv.setLayoutManager(new LinearLayoutManager(requireContext()));
         // set adapter
-        GameTimelineRecyclerViewAdapter adapter = new GameTimelineRecyclerViewAdapter(
-                gameList
+        adapter = new GameTimelineRecyclerViewAdapter(
+                initialTwo
         );
         cardRv.setAdapter(adapter);
+
+        // other buttons
+
+    }
+
+    private void goToNextCardInGame() { // TODO handle x or check symbol in center; include boolean arg
+        // show the obscured card for two seconds, prevent user from doing anything
+        adapter.obscure = false;
+        this.deactivateButtons = true;
+        adapter.notifyItemChanged(1);
+        // then unshow it and move on
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                // next card?
+                currentObscured++;
+                // if too high...
+                if (currentObscured >= gameOrder.size()) {
+                    // ending
+                    // TODO on end
+                } else {
+                    // going to next card
+                    // therefore rehide
+                    adapter.obscure = true;
+                    // scoot 1 to 0
+                    adapter.cards.set(
+                            0,
+                            adapter.cards.get(1)
+                    );
+                    // add next to 1
+                    adapter.cards.set(
+                            1,
+                            chronologicalList.get(gameOrder.get(currentObscured))
+                    );
+                    // reload
+                    adapter.notifyItemChanged(0);
+                    adapter.notifyItemChanged(1);
+                    // reactivate buttons
+                    deactivateButtons = false;
+                }
+            }
+        }, 2000);
     }
 }

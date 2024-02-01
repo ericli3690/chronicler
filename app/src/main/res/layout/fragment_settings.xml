@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    tools:context=".fragments.SettingsFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_alignParentTop="true">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Sound Effect Volume:"
+            android:textSize="25sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"/>
+
+        <SeekBar
+            android:id="@+id/fragment_settings_sfx"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:max="100"
+            android:progress="100"
+            android:padding="24dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Extra Difficulty:"
+            android:textSize="25sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Advanced Setting! Sometimes during the game, obvious comparisons such as 'Did the construction of the Pyramids of Giza occur before or after World War II?' appear. This setting can be used to prevent this. If this doesn't matter to you, leave this setting at 0%. The higher this setting is, the less likely obvious comparisons are to show up."
+            android:textSize="16sp"
+            android:lineSpacingExtra="4dp"
+            android:padding="8dp"
+            android:textColor="@color/grey"/>
+
+        <SeekBar
+            android:id="@+id/fragment_settings_difficulty"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:max="100"
+            android:progress="0"
+            android:padding="24dp"/>
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/fragment_settings_done"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Save"
+        android:backgroundTint="@color/green"
+        android:layout_alignParentBottom="true"/>
+
+</RelativeLayout>

@@ -3,21 +3,16 @@ CURRERNT
     - (distance algorithm)
     - (game algorithm)
     - icons are unclickable?
-
-REMAINING
+    - test back button
+- send to ahyan for feedback
+- maybe make delay time after showing customizable
 - import menu
     - preinstalled decks
     - api fetching
     - open files
 - export files
-- settings menu
-- opening tutorial dialog
-    - tap cards to flip them over
-- styling
-    - <item name="android:homeAsUpIndicator">@drawable/back_button_image</item> in themes
-    - logo
 
-FINAL
+POLISH
 - document all code
 - handle all todos
 

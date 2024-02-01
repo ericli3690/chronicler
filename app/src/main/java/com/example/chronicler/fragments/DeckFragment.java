@@ -18,6 +18,8 @@ import com.example.chronicler.R;
 import com.example.chronicler.databinding.FragmentDeckBinding;
 import com.example.chronicler.datatypes.Deck;
 import com.example.chronicler.functions.FileManager;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
 
 public class DeckFragment extends Fragment {
 
@@ -88,6 +90,25 @@ public class DeckFragment extends Fragment {
                 NavHostFragment.findNavController(DeckFragment.this).navigate(
                         DeckFragmentDirections.actionDeckFragmentToTimelineFragment(deckIndex, parentIndex)
                 );
+            }
+        });
+        binding.fragmentDeckGame.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // dont allow if there arent enough cards
+                if (deck.cards.size() > 1) {
+                    NavHostFragment.findNavController(DeckFragment.this).navigate(
+                            DeckFragmentDirections.actionDeckFragmentToGameFragment(deckIndex, parentIndex)
+                    );
+                } else {
+                    // there is only one card or no cards
+                    // you cant play the game, log an error
+                    Snackbar.make(
+                            requireActivity().findViewById(android.R.id.content), // get root
+                            "This deck doesn't have enough cards to play the game. Add more!",
+                            BaseTransientBottomBar.LENGTH_SHORT
+                    ).show();
+                }
             }
         });
     }

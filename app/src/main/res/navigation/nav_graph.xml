@@ -20,6 +20,9 @@
         <action
             android:id="@+id/action_homeFragment_to_addEditDeckFragment"
             app:destination="@id/addEditDeckFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
     </fragment>
     <fragment
         android:id="@+id/addEditDeckFragment"
@@ -129,5 +132,17 @@
         <argument
             android:name="parentIndex"
             app:argType="integer" />
+    </fragment>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.example.chronicler.fragments.SettingsFragment"
+        android:label="fragment_settings"
+        tools:layout="@layout/fragment_settings" >
+        <action
+            android:id="@+id/action_settingsFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+        <argument
+            android:name="empty"
+            app:argType="boolean" />
     </fragment>
 </navigation>

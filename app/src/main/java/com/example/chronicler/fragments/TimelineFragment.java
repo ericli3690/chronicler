@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 
 import com.example.chronicler.MainActivity;
 import com.example.chronicler.R;
+import com.example.chronicler.adapters.FullTimelineRecyclerViewAdapter;
 import com.example.chronicler.adapters.TimelineRecyclerViewAdapter;
 import com.example.chronicler.databinding.FragmentTimelineBinding;
 import com.example.chronicler.datatypes.Card;
@@ -31,6 +32,7 @@ public class TimelineFragment extends Fragment {
     private FragmentTimelineBinding binding;
     private int deckIndex;
     private int parentIndex;
+    private boolean allowEdit;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -46,6 +48,7 @@ public class TimelineFragment extends Fragment {
         // retrieve arguments from bundle
         this.deckIndex = TimelineFragmentArgs.fromBundle(getArguments()).getDeckIndex();
         this.parentIndex = TimelineFragmentArgs.fromBundle(getArguments()).getParentIndex();
+        this.allowEdit = TimelineFragmentArgs.fromBundle(getArguments()).getAllowAll();
         // grab data
         Deck masterDeck = ((MainActivity) requireActivity()).masterDeck;
 
@@ -56,6 +59,11 @@ public class TimelineFragment extends Fragment {
         ((Toolbar) requireActivity().findViewById(R.id.activity_main_toolbar)).setTitle(
                 "Timeline: " + deck.name
         );
+
+        // if edit is prohibited, hide the edit button
+        if (!allowEdit) {
+            binding.fragmentTimelineEdit.setVisibility(View.GONE);
+        }
 
         // back button
         requireActivity().getOnBackPressedDispatcher().addCallback(requireActivity(), new OnBackPressedCallback(true) {
@@ -73,7 +81,9 @@ public class TimelineFragment extends Fragment {
         // set layout
         cardRv.setLayoutManager(new LinearLayoutManager(requireContext()));
         // set adapter
-        TimelineRecyclerViewAdapter adapter = new TimelineRecyclerViewAdapter(deck.getAllCards(), true, false);
+        FullTimelineRecyclerViewAdapter adapter = new FullTimelineRecyclerViewAdapter(
+                deck.getAllCards().getChronologicalList()
+        );
         cardRv.setAdapter(adapter);
 
         // other buttons
@@ -82,17 +92,6 @@ public class TimelineFragment extends Fragment {
             public void onClick(View view) {
                 // get search term
                 String searchTerm = binding.fragmentTimelineSearchBar.getText().toString();
-//                // uncheck all checkboxes
-//                for (int cardIndex = 0; cardIndex < cardRv.getChildCount(); cardIndex++) {
-//                    // get each viewholder
-//                    TimelineRecyclerViewAdapter.ViewHolder viewHolder =
-//                            (TimelineRecyclerViewAdapter.ViewHolder)
-//                                    cardRv.getChildViewHolder(
-//                                            cardRv.getChildAt(cardIndex)
-//                                    );
-//                    // uncheck them
-//                    viewHolder.checkBox.setChecked(false);
-//                }
                 // only show those that contain it
                 adapter.hideAllWithoutSearchTerm(searchTerm);
             }

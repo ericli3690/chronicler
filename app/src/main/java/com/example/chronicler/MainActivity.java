@@ -1,7 +1,10 @@
 package com.example.chronicler;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
@@ -12,6 +15,7 @@ import android.os.Bundle;
 
 import com.example.chronicler.databinding.ActivityMainBinding;
 import com.example.chronicler.datatypes.Deck;
+import com.example.chronicler.datatypes.SettingsFile;
 import com.example.chronicler.functions.FileManager;
 
 import java.util.ArrayList;
@@ -21,6 +25,8 @@ public class MainActivity extends AppCompatActivity {
 
     public FileManager<Deck> masterDeckManager;
     public Deck masterDeck;
+    public FileManager<SettingsFile> settingsFileManager;
+    public SettingsFile settingsFile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +48,20 @@ public class MainActivity extends AppCompatActivity {
         } else {
             // already exists, just read it
             masterDeck = masterDeckManager.readObjectsFromFile().get(0);
+        }
+
+        // retrieve settings
+        // storing these at the root activity will allow game fragment to access them easily
+        settingsFileManager = new FileManager<SettingsFile>("settings.txt", SettingsFile.class, MainActivity.this, this);
+        if (!settingsFileManager.wasCreatedAlready()) {
+            // does the settings file NOT exist?
+            // if so create it and write it to file
+            // use the default settings
+            settingsFile = new SettingsFile(100, 0);
+            settingsFileManager.writeSingleObjectToFile(settingsFile);
+        } else {
+            // already exists, just read it
+            settingsFile = settingsFileManager.readObjectsFromFile().get(0);
         }
         
         // set navigation between fragments

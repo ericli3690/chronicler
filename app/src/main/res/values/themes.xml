@@ -14,4 +14,8 @@
         <item name="android:textColorPrimary">@color/black</item>
         <!-- Customize your theme here. -->
     </style>
+<!--    <style name="ToolbarTheme" parent="@style/ThemeOverlay.AppCompat.ActionBar">-->
+<!--        &lt;!&ndash; Customize color of navigation drawer icon and back arrow &ndash;&gt;-->
+<!--        <item name="homeAsUpIndicator">@drawable/chevron_left_solid</item>-->
+<!--    </style>-->
 </resources>

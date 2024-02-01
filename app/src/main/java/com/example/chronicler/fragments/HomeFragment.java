@@ -58,11 +58,20 @@ public class HomeFragment extends Fragment {
         deckRv.setAdapter(adapter);
 
         // set onclicks
-        binding.fragmentHomeButton.setOnClickListener(new View.OnClickListener() {
+        binding.fragmentHomeAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ActionHomeFragmentToAddEditDeckFragment action = HomeFragmentDirections.actionHomeFragmentToAddEditDeckFragment(true, 0, -1);
-                NavHostFragment.findNavController(HomeFragment.this).navigate(action);
+                NavHostFragment.findNavController(HomeFragment.this).navigate(
+                        HomeFragmentDirections.actionHomeFragmentToAddEditDeckFragment(true, 0, -1)
+                );
+            }
+        });
+        binding.fragmentHomeSettings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                NavHostFragment.findNavController(HomeFragment.this).navigate(
+                        HomeFragmentDirections.actionHomeFragmentToSettingsFragment(false)
+                );
             }
         });
     }

@@ -100,7 +100,7 @@ public class TimelineFragment extends Fragment {
         CardChronologicalList chronologicalList = deck.getAllCards().getChronologicalList();
         if (allowEdit) {
             adapter = new FullTimelineRecyclerViewAdapter(
-                    chronologicalList
+                    chronologicalList, requireContext()
             );
         } else {
             adapter = new PartialTimelineRecyclerViewAdapter(

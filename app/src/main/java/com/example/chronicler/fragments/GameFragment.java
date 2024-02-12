@@ -1,5 +1,6 @@
 package com.example.chronicler.fragments;
 
+import android.media.MediaPlayer;
 import android.os.Bundle;
 
 import androidx.activity.OnBackPressedCallback;
@@ -56,6 +57,7 @@ public class GameFragment extends Fragment {
     private int sessionHighStreak;
     private int streak;
     private int score;
+    private int currentlyDisplayedScoreboard;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -219,6 +221,41 @@ public class GameFragment extends Fragment {
                 );
             }
         });
+
+        // show high score ui
+        Handler scoreboardHandler = new Handler(Looper.getMainLooper());
+        currentlyDisplayedScoreboard = 0;
+        Runnable nextScoreboard = new Runnable() {
+            @Override
+            public void run() {
+                switch (currentlyDisplayedScoreboard) {
+                    case 0:
+                        binding.fragmentGameScoreboard.setText("High Score: " + deck.highScore);
+                        break;
+                    case 1:
+                        binding.fragmentGameScoreboard.setText("High Streak: " + deck.highStreak);
+                        break;
+                    case 2:
+                        binding.fragmentGameScoreboard.setText("Current High Streak: " + sessionHighStreak);
+                        break;
+                    case 3:
+                        binding.fragmentGameScoreboard.setText("Current Streak" + streak);
+                        break;
+                    case 4:
+                    default:
+                        binding.fragmentGameScoreboard.setText("Current Score" + score);
+                }
+                // increment
+                currentlyDisplayedScoreboard++;
+                if (currentlyDisplayedScoreboard == 5) {
+                    currentlyDisplayedScoreboard = 0;
+                }
+                // delay
+                scoreboardHandler.postDelayed(this, 2000); // hardcoded delay, can add customization in the future
+            }
+        };
+
+        nextScoreboard.run();
     }
 
     public void goToNextCardInGame(int isBeforeDuringOrAfter) {
@@ -242,13 +279,18 @@ public class GameFragment extends Fragment {
             if (score > deck.highScore) {
                 deck.highScore++;
             }
+            // sound
+            MediaPlayer player = MediaPlayer.create(requireContext(), R.raw.correct);
+            player.start();
         } else {
             // failure
             binding.fragmentGameCross.setVisibility(View.VISIBLE); // show x
             // stats
             streak = 0;
+            // sound
+            MediaPlayer player = MediaPlayer.create(requireContext(), R.raw.incorrect);
+            player.start();
         }
-        // TODO display high score stats
         // show the obscured card for two seconds, prevent user from doing anything
         adapter.obscure = false;
         this.deactivateButtons = true;
@@ -263,7 +305,11 @@ public class GameFragment extends Fragment {
                 // if too high...
                 if (currentObscured >= gameOrder.size()) {
                     // ending
-                    // TODO on end; is game algorithm fully implemented?
+                    Snackbar.make(
+                            requireActivity().findViewById(android.R.id.content), // get root
+                            "You finished the game! Press back to return to the deck screen.",
+                            BaseTransientBottomBar.LENGTH_SHORT
+                    ).show(); // immediately show
                 } else {
                     // going to next card
                     // therefore rehide and revert ui

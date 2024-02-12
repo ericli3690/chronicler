@@ -1,5 +1,7 @@
 package com.example.chronicler.adapters;
 
+import android.content.Context;
+import android.media.MediaPlayer;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -16,15 +18,17 @@ public abstract class ChronologicalTimelineRecyclerViewAdapter extends TimelineR
     protected CardChronologicalList renderedChronologicalCards;
     private List<Card> flippedCards; // not chronological
     public List<Integer> checkedCardIndices;
+    private Context context;
 
     public ChronologicalTimelineRecyclerViewAdapter() {
         super();
     }
 
-    public ChronologicalTimelineRecyclerViewAdapter(CardChronologicalList chronologicalCards) {
+    public ChronologicalTimelineRecyclerViewAdapter(CardChronologicalList chronologicalCards, Context context) {
         super();
         this.chronologicalCards = chronologicalCards;
         this.renderedChronologicalCards = new CardChronologicalList(this.chronologicalCards);
+        this.context = context;
         // flips
         this.flippedCards = new ArrayList<Card>();
     }
@@ -70,6 +74,9 @@ public abstract class ChronologicalTimelineRecyclerViewAdapter extends TimelineR
                 }
                 // update on screen
                 notifyItemChanged(renderedChronologicalCards.indexOf(card));
+                // play sound
+                MediaPlayer player = MediaPlayer.create(context, R.raw.flip);
+                player.start();
             }
         });
     }

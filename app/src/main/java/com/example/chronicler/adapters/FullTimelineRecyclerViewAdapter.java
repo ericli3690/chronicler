@@ -1,5 +1,6 @@
 package com.example.chronicler.adapters;
 
+import android.content.Context;
 import android.view.View;
 import android.widget.CompoundButton;
 
@@ -13,8 +14,8 @@ import java.util.List;
 
 public class FullTimelineRecyclerViewAdapter extends ChronologicalTimelineRecyclerViewAdapter {
 
-    public FullTimelineRecyclerViewAdapter(CardChronologicalList chronologicalCards) {
-        super(chronologicalCards);
+    public FullTimelineRecyclerViewAdapter(CardChronologicalList chronologicalCards, Context context) {
+        super(chronologicalCards, context);
         this.checkedCardIndices = new ArrayList<Integer>();
     }
 

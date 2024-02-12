@@ -1,8 +1,9 @@
 CURRERNT
-- the game
-    - (game algorithm)
-    - icons are unclickable?
-    - test back button
+
+- icons are unclickable?
+- test back button
+- sfx working?
+
 - send to ahyan for feedback
 - import menu
     - preinstalled decks
@@ -11,7 +12,7 @@ CURRERNT
 
 CRIT E
 - exporting files
-- custom delay when playign the game
+- custom delay when playing the game
 
 POLISH
 - document all code

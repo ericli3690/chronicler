@@ -139,7 +139,7 @@ public class AddEditCardFragment extends Fragment {
                 @Override
                 public void handleOnBackPressed() {
                     NavHostFragment.findNavController(AddEditCardFragment.this).navigate(
-                            AddEditCardFragmentDirections.actionAddEditCardFragmentToTimelineFragment(deckIndex, parentIndex, true)
+                            AddEditCardFragmentDirections.actionAddEditCardFragmentToTimelineFragment(deckIndex, parentIndex, true, "", 0)
                     );
                     this.setEnabled(false);
                 }
@@ -404,7 +404,7 @@ public class AddEditCardFragment extends Fragment {
         masterDeckManager.writeSingleObjectToFile(masterDeck);
         // navigate back to the timeline
         NavHostFragment.findNavController(AddEditCardFragment.this).navigate(
-                AddEditCardFragmentDirections.actionAddEditCardFragmentToTimelineFragment(deckIndex, parentIndex)
+                AddEditCardFragmentDirections.actionAddEditCardFragmentToTimelineFragment(deckIndex, parentIndex, true, "", 0)
         );
     }
 

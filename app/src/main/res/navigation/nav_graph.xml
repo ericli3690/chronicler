@@ -96,6 +96,12 @@
         <argument
             android:name="allowEdit"
             app:argType="boolean" />
+        <argument
+            android:name="GameOrderString"
+            app:argType="string" />
+        <argument
+            android:name="currentObscured"
+            app:argType="integer" />
     </fragment>
     <fragment
         android:id="@+id/addEditCardFragment"
@@ -134,6 +140,12 @@
             app:argType="integer" />
         <argument
             android:name="parentIndex"
+            app:argType="integer" />
+        <argument
+            android:name="gameOrderString"
+            app:argType="string" />
+        <argument
+            android:name="currentObscured"
             app:argType="integer" />
     </fragment>
     <fragment

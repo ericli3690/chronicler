@@ -1,16 +1,17 @@
 CURRERNT
 - the game
-    - (distance algorithm)
     - (game algorithm)
     - icons are unclickable?
     - test back button
 - send to ahyan for feedback
-- maybe make delay time after showing customizable
 - import menu
     - preinstalled decks
     - api fetching
     - open files
-- export files
+
+CRIT E
+- exporting files
+- custom delay when playign the game
 
 POLISH
 - document all code

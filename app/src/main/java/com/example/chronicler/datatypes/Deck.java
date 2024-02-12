@@ -14,8 +14,8 @@ public class Deck {
     public String name;
     public List<Deck> children;
     public CardHeap cards;
-    public int highScore;
     public int highStreak;
+    public int highScore;
 
     // private utilities
     private final static Sorter<Deck> sorter = new Sorter<Deck>(new Comparator<Deck>() {

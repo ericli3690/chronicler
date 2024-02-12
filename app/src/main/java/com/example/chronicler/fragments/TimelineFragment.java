@@ -16,15 +16,20 @@ import android.view.ViewGroup;
 
 import com.example.chronicler.MainActivity;
 import com.example.chronicler.R;
+import com.example.chronicler.adapters.ChronologicalTimelineRecyclerViewAdapter;
 import com.example.chronicler.adapters.FullTimelineRecyclerViewAdapter;
+import com.example.chronicler.adapters.PartialTimelineRecyclerViewAdapter;
 import com.example.chronicler.adapters.TimelineRecyclerViewAdapter;
 import com.example.chronicler.databinding.FragmentTimelineBinding;
 import com.example.chronicler.datatypes.Card;
+import com.example.chronicler.datatypes.CardChronologicalList;
 import com.example.chronicler.datatypes.Deck;
+import com.example.chronicler.functions.Sorter;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class TimelineFragment extends Fragment {
@@ -32,6 +37,8 @@ public class TimelineFragment extends Fragment {
     private FragmentTimelineBinding binding;
     private int deckIndex;
     private int parentIndex;
+    private String gameOrderString;
+    private int currentObscured;
     private boolean allowEdit;
 
     @Override
@@ -49,6 +56,8 @@ public class TimelineFragment extends Fragment {
         this.deckIndex = TimelineFragmentArgs.fromBundle(getArguments()).getDeckIndex();
         this.parentIndex = TimelineFragmentArgs.fromBundle(getArguments()).getParentIndex();
         this.allowEdit = TimelineFragmentArgs.fromBundle(getArguments()).getAllowEdit();
+        this.gameOrderString = TimelineFragmentArgs.fromBundle(getArguments()).getGameOrderString();
+        this.currentObscured = TimelineFragmentArgs.fromBundle(getArguments()).getCurrentObscured();
         // grab data
         Deck masterDeck = ((MainActivity) requireActivity()).masterDeck;
 
@@ -69,9 +78,15 @@ public class TimelineFragment extends Fragment {
         requireActivity().getOnBackPressedDispatcher().addCallback(requireActivity(), new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                NavHostFragment.findNavController(TimelineFragment.this).navigate(
-                        TimelineFragmentDirections.actionTimelineFragmentToDeckFragment(deckIndex, parentIndex)
-                );
+                if (allowEdit) {
+                    NavHostFragment.findNavController(TimelineFragment.this).navigate(
+                            TimelineFragmentDirections.actionTimelineFragmentToDeckFragment(deckIndex, parentIndex)
+                    );
+                } else {
+                    NavHostFragment.findNavController(TimelineFragment.this).navigate(
+                            TimelineFragmentDirections.actionTimelineFragmentToGameFragment(deckIndex, parentIndex, gameOrderString, currentObscured)
+                    );
+                }
                 this.setEnabled(false);
             }
         });
@@ -80,10 +95,19 @@ public class TimelineFragment extends Fragment {
         RecyclerView cardRv = binding.fragmentTimelineRv;
         // set layout
         cardRv.setLayoutManager(new LinearLayoutManager(requireContext()));
+        ChronologicalTimelineRecyclerViewAdapter adapter;
         // set adapter
-        FullTimelineRecyclerViewAdapter adapter = new FullTimelineRecyclerViewAdapter(
-                deck.getAllCards().getChronologicalList()
-        );
+        CardChronologicalList chronologicalList = deck.getAllCards().getChronologicalList();
+        if (allowEdit) {
+            adapter = new FullTimelineRecyclerViewAdapter(
+                    chronologicalList
+            );
+        } else {
+            adapter = new PartialTimelineRecyclerViewAdapter(
+                    chronologicalList, gameOrderString, currentObscured
+            );
+        }
+
         cardRv.setAdapter(adapter);
 
         // other buttons
@@ -100,6 +124,12 @@ public class TimelineFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 // get all that are selected
+                if (gameOrderString.length() > 0) {
+                    return;
+                }
+                // we can now be sure we are in full mode
+                // ie this is not accessed from the game
+                // and there are checkboxes visible
                 List<Integer> checkedCardIndices = adapter.checkedCardIndices;
                 // check that at least one is selected
                 if (checkedCardIndices.size() == 0) {

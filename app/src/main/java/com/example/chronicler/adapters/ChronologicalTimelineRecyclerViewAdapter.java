@@ -15,6 +15,7 @@ public abstract class ChronologicalTimelineRecyclerViewAdapter extends TimelineR
     protected CardChronologicalList chronologicalCards;
     protected CardChronologicalList renderedChronologicalCards;
     private List<Card> flippedCards; // not chronological
+    public List<Integer> checkedCardIndices;
 
     public ChronologicalTimelineRecyclerViewAdapter() {
         super();

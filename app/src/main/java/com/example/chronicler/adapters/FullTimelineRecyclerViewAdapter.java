@@ -13,8 +13,6 @@ import java.util.List;
 
 public class FullTimelineRecyclerViewAdapter extends ChronologicalTimelineRecyclerViewAdapter {
 
-    public List<Integer> checkedCardIndices;
-
     public FullTimelineRecyclerViewAdapter(CardChronologicalList chronologicalCards) {
         super(chronologicalCards);
         this.checkedCardIndices = new ArrayList<Integer>();

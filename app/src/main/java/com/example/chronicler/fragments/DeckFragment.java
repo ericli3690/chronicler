@@ -88,7 +88,7 @@ public class DeckFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 NavHostFragment.findNavController(DeckFragment.this).navigate(
-                        DeckFragmentDirections.actionDeckFragmentToTimelineFragment(deckIndex, parentIndex, true)
+                        DeckFragmentDirections.actionDeckFragmentToTimelineFragment(deckIndex, parentIndex, true, "", 0)
                 );
             }
         });
@@ -98,7 +98,7 @@ public class DeckFragment extends Fragment {
                 // dont allow if there arent enough cards
                 if (deck.cards.size() > 1) {
                     NavHostFragment.findNavController(DeckFragment.this).navigate(
-                            DeckFragmentDirections.actionDeckFragmentToGameFragment(deckIndex, parentIndex)
+                            DeckFragmentDirections.actionDeckFragmentToGameFragment(deckIndex, parentIndex, "", 0)
                     );
                 } else {
                     // there is only one card or no cards

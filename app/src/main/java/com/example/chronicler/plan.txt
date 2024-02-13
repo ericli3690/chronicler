@@ -1,17 +1,13 @@
 CURRERNT
 
-- icons are unclickable?
-- test back button
-- sfx working?
-
 - send to ahyan for feedback
 - import menu
     - preinstalled decks
     - api fetching
     - open files
+- export files
 
 CRIT E
-- exporting files
 - custom delay when playing the game
 
 POLISH

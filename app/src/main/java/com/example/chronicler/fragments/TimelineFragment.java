@@ -24,7 +24,7 @@ import com.example.chronicler.databinding.FragmentTimelineBinding;
 import com.example.chronicler.datatypes.Card;
 import com.example.chronicler.datatypes.CardChronologicalList;
 import com.example.chronicler.datatypes.Deck;
-import com.example.chronicler.functions.Sorter;
+import com.example.chronicler.datatypes.SettingsFile;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -59,6 +59,7 @@ public class TimelineFragment extends Fragment {
         this.gameOrderString = TimelineFragmentArgs.fromBundle(getArguments()).getGameOrderString();
         this.currentObscured = TimelineFragmentArgs.fromBundle(getArguments()).getCurrentObscured();
         // grab data
+        SettingsFile settingsFile = ((MainActivity) requireActivity()).settingsFile;
         Deck masterDeck = ((MainActivity) requireActivity()).masterDeck;
 
         //// get deck name
@@ -100,11 +101,11 @@ public class TimelineFragment extends Fragment {
         CardChronologicalList chronologicalList = deck.getAllCards().getChronologicalList();
         if (allowEdit) {
             adapter = new FullTimelineRecyclerViewAdapter(
-                    chronologicalList, requireContext()
+                    chronologicalList, requireContext(), settingsFile
             );
         } else {
             adapter = new PartialTimelineRecyclerViewAdapter(
-                    chronologicalList, gameOrderString, currentObscured
+                    chronologicalList, gameOrderString, currentObscured, requireContext(), settingsFile
             );
         }
 

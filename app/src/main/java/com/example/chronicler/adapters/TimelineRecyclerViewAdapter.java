@@ -1,5 +1,6 @@
 package com.example.chronicler.adapters;
 
+import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.method.ScrollingMovementMethod;
@@ -60,10 +61,16 @@ public abstract class TimelineRecyclerViewAdapter extends RecyclerView.Adapter<T
 
     // instance vars
     private SubCardRowBinding binding;
+    protected List<Card> flippedCards; // not chronological
+    protected Context context;
 
     // empty dummy constructor
     // after all, this abstract class is mainly to keep viewholder stuff all together
-    public TimelineRecyclerViewAdapter() {}
+    public TimelineRecyclerViewAdapter(Context context) {
+        // flips
+        this.flippedCards = new ArrayList<Card>();
+        this.context = context;
+    }
 
     @NonNull
     @Override

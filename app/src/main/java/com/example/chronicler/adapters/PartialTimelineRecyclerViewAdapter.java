@@ -1,6 +1,9 @@
 package com.example.chronicler.adapters;
 
+import android.content.Context;
+
 import com.example.chronicler.datatypes.CardChronologicalList;
+import com.example.chronicler.datatypes.SettingsFile;
 import com.example.chronicler.functions.Sorter;
 
 import java.util.ArrayList;
@@ -9,16 +12,17 @@ import java.util.List;
 
 public class PartialTimelineRecyclerViewAdapter extends ChronologicalTimelineRecyclerViewAdapter {
 
-    public PartialTimelineRecyclerViewAdapter(CardChronologicalList chronologicalCards, String gameOrderString, int currentObscured) {
+    public PartialTimelineRecyclerViewAdapter(CardChronologicalList chronologicalCards, String gameOrderString, int currentObscured, Context context, SettingsFile settingsFile) {
+        super(chronologicalCards, context, settingsFile);
         // get the game order
         String[] gameOrderStringList = gameOrderString.split(" ");
-        List<Integer> gameOrder = new ArrayList<Integer>();
+        List<Integer> gameOrderIndices = new ArrayList<Integer>();
         for (int convertIndex = 0; convertIndex < gameOrderStringList.length; convertIndex++) {
-            gameOrder.add(Integer.parseInt(gameOrderStringList[convertIndex]));
+            gameOrderIndices.add(Integer.parseInt(gameOrderStringList[convertIndex]));
         }
         // the cards that have been shown so far are all the indices in gameorder up to currentObscured-1
         // chop gameOrder off at this index
-        List<Integer> choppedGameOrder = gameOrder.subList(0,currentObscured); // will not include currentobscured0
+        List<Integer> choppedGameOrderIndices = gameOrderIndices.subList(0,currentObscured); // will not include currentobscured0
         // sort them from lowest to highest (ie chronologically)
         Sorter<Integer> sorter = new Sorter<Integer>(new Comparator<Integer>() {
             @Override
@@ -29,15 +33,16 @@ public class PartialTimelineRecyclerViewAdapter extends ChronologicalTimelineRec
                 // will return 0 if they are the same
             }
         });
-        sorter.doSort(choppedGameOrder);
+        sorter.doSort(choppedGameOrderIndices);
         // then iterate through that list of indices, adding to a final list as we go
         // the fact that the gameorder list is now sorted chronologically means that the culledchronologicallist will also be sorted chronologically
         CardChronologicalList culledChronologicalList = new CardChronologicalList();
-        for (Integer includedCardIndex : choppedGameOrder) {
+        for (Integer includedCardIndex : choppedGameOrderIndices) {
             culledChronologicalList.add(chronologicalCards.get(includedCardIndex));
         }
         // the chronological list now only contains those listed in cardIndicesInString, stored chronologically
-        this.renderedChronologicalCards = culledChronologicalList;
+        this.chronologicalCards = culledChronologicalList;
+        this.renderedChronologicalCards = new CardChronologicalList(this.chronologicalCards);
     }
 
 }

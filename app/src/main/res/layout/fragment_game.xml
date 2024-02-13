@@ -8,194 +8,208 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".fragments.GameFragment">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:layout_alignParentTop="true"
-        android:layout_above="@id/fragment_game_timeline">
-
-        <TextView
-            android:id="@+id/fragment_game_scoreboard"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Scoreboard Loading..."
-            android:textSize="20sp"
-            android:textColor="@color/grey"/>
-
-        <com.google.android.material.divider.MaterialDivider
-            android:id="@+id/fragment_game_divider_1"
-            android:layout_width="wrap_content"
-            android:layout_height="2dp"
-            android:layout_marginVertical="12dp"
-            app:dividerColor="@color/peach_2"/>
-
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/fragment_game_rv"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/fragment_game_vs"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:tint="@color/brown_2"
-                app:maxImageSize="56dp"
-                android:backgroundTint="@color/white"
-                android:layout_gravity="center"
-                android:visibility="visible"
-                android:clickable="false"
-                android:src="@drawable/versus_icon" />
-
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/fragment_game_check"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:maxImageSize="32dp"
-                android:backgroundTint="@color/green"
-                app:borderWidth="0dp"
-                android:layout_gravity="center"
-                android:visibility="gone"
-                android:clickable="false"
-                android:src="@drawable/check_solid" />
-
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/fragment_game_cross"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:maxImageSize="32dp"
-                android:backgroundTint="@color/red"
-                app:borderWidth="0dp"
-                android:layout_gravity="center"
-                android:visibility="gone"
-                android:clickable="false"
-                android:src="@drawable/xmark_solid" />
-
-        </FrameLayout>
-
-        <com.google.android.material.divider.MaterialDivider
-            android:id="@+id/fragment_game_divider_2"
-            android:layout_width="wrap_content"
-            android:layout_height="2dp"
-            android:layout_marginVertical="12dp"
-            app:dividerColor="@color/peach_2"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="The second event is..."
-            android:textSize="12sp"
-            android:textAlignment="center"
-            android:textColor="@color/grey"/>
+        android:layout_height="wrap_content">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:layout_marginVertical="8dp">
+            android:orientation="vertical">
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <com.google.android.material.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/fragment_game_before"
-                    android:layout_width="wrap_content"
-                    android:layout_height="0dp"
-                    app:fabCustomSize="80dp"
-                    app:maxImageSize="40dp"
-                    android:layout_weight="1"
-                    android:src="@drawable/chevron_left_solid"
-                    android:layout_marginHorizontal="16dp"
-                    android:layout_marginVertical="8dp"/>
+                android:orientation="horizontal">
 
                 <TextView
-                    android:layout_width="match_parent"
+                    android:id="@+id/fragment_game_scoreboard"
+                    android:layout_width="0dp"
+                    android:layout_weight="0.6"
                     android:layout_height="wrap_content"
-                    android:text="BEFORE"
-                    android:textSize="12sp"
-                    android:textAlignment="center"
+                    android:text="Scoreboard Loading..."
+                    android:layout_gravity="center_vertical"
+                    android:textSize="20sp"
                     android:textColor="@color/grey"/>
+
+                <Button
+                    android:id="@+id/fragment_game_timeline"
+                    android:layout_width="0dp"
+                    android:layout_weight="0.4"
+                    android:layout_height="wrap_content"
+                    android:text="View Timeline"
+                    android:backgroundTint="@color/peach_2"
+                    android:layout_marginTop="6dp"
+                    android:layout_alignParentBottom="true"/>
 
             </LinearLayout>
 
-            <LinearLayout
+            <com.google.android.material.divider.MaterialDivider
+                android:id="@+id/fragment_game_divider_1"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_height="2dp"
+                android:layout_marginVertical="12dp"
+                app:dividerColor="@color/peach_2"/>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/fragment_game_rv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
 
                 <com.google.android.material.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/fragment_game_during"
+                    android:id="@+id/fragment_game_vs"
                     android:layout_width="wrap_content"
-                    android:layout_height="0dp"
-                    app:fabCustomSize="80dp"
-                    app:maxImageSize="40dp"
-                    android:layout_weight="1"
-                    android:src="@drawable/equals_solid"
-                    android:layout_marginHorizontal="16dp"
-                    android:layout_marginVertical="8dp"/>
-
-                <TextView
-                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="DURING"
-                    android:textSize="12sp"
-                    android:textAlignment="center"
-                    android:textColor="@color/grey"/>
+                    app:tint="@color/brown_2"
+                    app:maxImageSize="56dp"
+                    android:backgroundTint="@color/white"
+                    android:layout_gravity="center"
+                    android:visibility="visible"
+                    android:clickable="false"
+                    android:src="@drawable/versus_icon" />
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/fragment_game_check"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:maxImageSize="32dp"
+                    android:backgroundTint="@color/green"
+                    app:borderWidth="0dp"
+                    android:layout_gravity="center"
+                    android:visibility="gone"
+                    android:clickable="false"
+                    android:src="@drawable/check_solid" />
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/fragment_game_cross"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:maxImageSize="32dp"
+                    android:backgroundTint="@color/red"
+                    app:borderWidth="0dp"
+                    android:layout_gravity="center"
+                    android:visibility="gone"
+                    android:clickable="false"
+                    android:src="@drawable/xmark_solid" />
+
+            </FrameLayout>
+
+            <com.google.android.material.divider.MaterialDivider
+                android:id="@+id/fragment_game_divider_2"
+                android:layout_width="wrap_content"
+                android:layout_height="2dp"
+                android:layout_marginVertical="12dp"
+                app:dividerColor="@color/peach_2"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="The second event is..."
+                android:textSize="12sp"
+                android:textAlignment="center"
+                android:textColor="@color/grey"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_marginVertical="8dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <com.google.android.material.floatingactionbutton.FloatingActionButton
+                        android:id="@+id/fragment_game_before"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        app:fabCustomSize="60dp"
+                        app:maxImageSize="30dp"
+                        android:layout_weight="1"
+                        android:src="@drawable/chevron_left_solid"
+                        android:layout_marginHorizontal="16dp"
+                        android:layout_marginVertical="8dp"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="BEFORE"
+                        android:textSize="12sp"
+                        android:textAlignment="center"
+                        android:textColor="@color/grey"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <com.google.android.material.floatingactionbutton.FloatingActionButton
+                        android:id="@+id/fragment_game_during"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        app:fabCustomSize="60dp"
+                        app:maxImageSize="30dp"
+                        android:layout_weight="1"
+                        android:src="@drawable/equals_solid"
+                        android:layout_marginHorizontal="16dp"
+                        android:layout_marginVertical="8dp"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="DURING"
+                        android:textSize="12sp"
+                        android:textAlignment="center"
+                        android:textColor="@color/grey"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <com.google.android.material.floatingactionbutton.FloatingActionButton
+                        android:id="@+id/fragment_game_after"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:fabCustomSize="60dp"
+                        app:maxImageSize="30dp"
+                        android:layout_weight="1"
+                        android:src="@drawable/chevron_right_solid"
+                        android:layout_marginHorizontal="16dp"
+                        android:layout_marginVertical="8dp"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="AFTER"
+                        android:textSize="12sp"
+                        android:textAlignment="center"
+                        android:textColor="@color/grey"/>
+
+                </LinearLayout>
 
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="wrap_content"
+            <TextView
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <com.google.android.material.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/fragment_game_after"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:fabCustomSize="80dp"
-                    app:maxImageSize="40dp"
-                    android:layout_weight="1"
-                    android:src="@drawable/chevron_right_solid"
-                    android:layout_marginHorizontal="16dp"
-                    android:layout_marginVertical="8dp"/>
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="AFTER"
-                    android:textSize="12sp"
-                    android:textAlignment="center"
-                    android:textColor="@color/grey"/>
-
-            </LinearLayout>
+                android:text="...the first event."
+                android:textSize="12sp"
+                android:layout_marginTop="8dp"
+                android:textAlignment="center"
+                android:textColor="@color/grey"/>
 
         </LinearLayout>
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="...the first event."
-            android:textSize="12sp"
-            android:layout_marginTop="8dp"
-            android:textAlignment="center"
-            android:textColor="@color/grey"/>
-
-    </LinearLayout>
-
-    <Button
-        android:id="@+id/fragment_game_timeline"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="View Timeline"
-        android:backgroundTint="@color/peach_2"
-        android:layout_marginTop="6dp"
-        android:layout_alignParentBottom="true"/>
+    </ScrollView>
 
 </RelativeLayout>

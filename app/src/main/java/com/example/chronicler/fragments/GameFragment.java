@@ -1,5 +1,6 @@
 package com.example.chronicler.fragments;
 
+import android.graphics.Typeface;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +28,7 @@ import com.example.chronicler.datatypes.CardChronologicalList;
 import com.example.chronicler.datatypes.CardHeap;
 import com.example.chronicler.datatypes.Deck;
 import com.example.chronicler.datatypes.SettingsFile;
+import com.example.chronicler.functions.FileManager;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -40,21 +43,22 @@ public class GameFragment extends Fragment {
     private int parentIndex;
     private String gameOrderString;
     private Deck deck;
-    private List<Integer> gameOrder;
+    private List<Card> gameOrder;
     private int currentObscured;
     private GameTimelineRecyclerViewAdapter adapter;
     private CardChronologicalList chronologicalList;
+    private Deck masterDeck;
+    private FileManager<Deck> masterDeckManager;
+    private SettingsFile settingsFile;
     private boolean deactivateButtons;
 
     // stats
 
     // Highest score ever achieved for the selected deck (see Deck)
     // Highest streak ever achieved for the selected deck (see Deck)
-    // Current highest streak achieved during this game session
     // Current running streak
     // Current score during this game session
 
-    private int sessionHighStreak;
     private int streak;
     private int score;
     private int currentlyDisplayedScoreboard;
@@ -76,8 +80,9 @@ public class GameFragment extends Fragment {
         this.gameOrderString = GameFragmentArgs.fromBundle(getArguments()).getGameOrderString();
         this.currentObscured = GameFragmentArgs.fromBundle(getArguments()).getCurrentObscured();
         // grab data
-        Deck masterDeck = ((MainActivity) requireActivity()).masterDeck;
-        SettingsFile settingsFile = ((MainActivity) requireActivity()).settingsFile;
+        masterDeck = ((MainActivity) requireActivity()).masterDeck;
+        masterDeckManager = ((MainActivity) requireActivity()).masterDeckManager;
+        settingsFile = ((MainActivity) requireActivity()).settingsFile;
         // activate buttons
         this.deactivateButtons = false;
 
@@ -121,14 +126,14 @@ public class GameFragment extends Fragment {
         // will use just the first two
         // deckFragment will guarantee these both exist
 
+        // get cards
+        // create one chronological list for reference
+        CardHeap allCards = deck.getAllCards();
+        chronologicalList = allCards.getChronologicalList();
+
         if (gameOrderString.length() == 0) {
             // game order does not exist yet, this is a new game
-
-            // get cards
-            // create one chronological list for reference
-            CardHeap allCards = deck.getAllCards();
-            chronologicalList = allCards.getChronologicalList();
-
+            // therefore run...
             // THE DIFFICULTY ALGORITHM
             // create another chronological list for working and whittling down
             CardChronologicalList workingList = new CardChronologicalList(chronologicalList);
@@ -142,16 +147,20 @@ public class GameFragment extends Fragment {
             // round it down: now difficulty stores an integer equal to approximately [percentDifficulty] of the cards
             int difficulty = (int) Math.floor(unroundedDifficulty);
             // output
-            gameOrder = new ArrayList<Integer>();
+            gameOrder = new ArrayList<Card>();
             // generate a random number from 0 to # of cards
             Random random = new Random();
             int nextCardIndex = random.nextInt(chronologicalList.size());
             // then generate the cards on each game step, destroying the working list as we go
-            while (workingList.size() > 0) {
-                gameOrder.add(nextCardIndex);
+            while (true) {
+                gameOrder.add(workingList.get(nextCardIndex));
                 workingList.remove(nextCardIndex);
                 int left = Math.max(0, nextCardIndex-difficulty);
-                int right = Math.max(nextCardIndex+difficulty, workingList.size());
+                int right = Math.min(nextCardIndex+difficulty, workingList.size());
+
+                if (workingList.size() == 0) {
+                    break;
+                }
 
                 // finally, select a card that is at most [difficulty] cards on either side of the current index
                 // INCLUDES handling the fact that the central index has been removed and that the list is shifted
@@ -159,18 +168,24 @@ public class GameFragment extends Fragment {
             }
             // game order is now a list of integers that obey the difficulty rule
             // and which includes every index in the chronological list
-            initialTwo.add(chronologicalList.get(gameOrder.get(0)));
-            initialTwo.add(chronologicalList.get(gameOrder.get(1)));
+            initialTwo.add(gameOrder.get(0));
+            initialTwo.add(gameOrder.get(1));
             currentObscured = 1;
         } else {
             // game order already exists, read it
             String[] gameOrderStringList = gameOrderString.split(" ");
-            gameOrder = new ArrayList<Integer>();
-            for (int convertIndex = 0; convertIndex < gameOrderStringList.length; convertIndex++) {
-                gameOrder.add(Integer.parseInt(gameOrderStringList[convertIndex]));
+            gameOrder = new ArrayList<Card>();
+            for (String stringToConvert : gameOrderStringList) {
+                gameOrder.add( // add to the game order...
+                        chronologicalList.get( // from the chronological list...
+                                Integer.parseInt( // the integer...
+                                        stringToConvert // ...index that is next
+                                )
+                        )
+                );
             }
-            initialTwo.add(chronologicalList.get(gameOrder.get(currentObscured-1)));
-            initialTwo.add(chronologicalList.get(gameOrder.get(currentObscured)));
+            initialTwo.add(gameOrder.get(currentObscured-1));
+            initialTwo.add(gameOrder.get(currentObscured));
         }
 
         // display first two
@@ -180,7 +195,7 @@ public class GameFragment extends Fragment {
         cardRv.setLayoutManager(new LinearLayoutManager(requireContext()));
         // set adapter
         adapter = new GameTimelineRecyclerViewAdapter(
-                initialTwo
+                initialTwo, requireContext(), settingsFile
         );
         cardRv.setAdapter(adapter);
 
@@ -211,13 +226,19 @@ public class GameFragment extends Fragment {
                 }
                 // package up game order
                 List<String> gameOrderStringList = new ArrayList<String>();
-                for (Integer gameIndex : gameOrder) {
-                    gameOrderStringList.add(Integer.toString(gameIndex));
+                for (Card card : gameOrder) {
+                    gameOrderStringList.add( // add to the string list...
+                            Integer.toString( // the integer...
+                                    chronologicalList.indexOf( // ...location of the card... (this is mostly efficient since it is a binary search)
+                                            card // ...that is next
+                                    )
+                            )
+                    );
                 }
                 gameOrderString = String.join(" ", gameOrderStringList);
                 // send it to timeline so state is saved
                 NavHostFragment.findNavController(GameFragment.this).navigate(
-                        DeckFragmentDirections.actionDeckFragmentToTimelineFragment(deckIndex, parentIndex, false, gameOrderString, currentObscured)
+                        GameFragmentDirections.actionGameFragmentToTimelineFragment(deckIndex, parentIndex, false, gameOrderString, currentObscured)
                 );
             }
         });
@@ -230,24 +251,25 @@ public class GameFragment extends Fragment {
             public void run() {
                 switch (currentlyDisplayedScoreboard) {
                     case 0:
-                        binding.fragmentGameScoreboard.setText("High Score: " + deck.highScore);
+                        binding.fragmentGameScoreboard.setText("High Streak: " + deck.highStreak);
+                        binding.fragmentGameScoreboard.setTypeface(null, Typeface.BOLD_ITALIC);
                         break;
                     case 1:
-                        binding.fragmentGameScoreboard.setText("High Streak: " + deck.highStreak);
+                        binding.fragmentGameScoreboard.setText("High Score: " + deck.highScore);
+                        binding.fragmentGameScoreboard.setTypeface(null, Typeface.BOLD);
                         break;
                     case 2:
-                        binding.fragmentGameScoreboard.setText("Current High Streak: " + sessionHighStreak);
+                        binding.fragmentGameScoreboard.setText("Current Streak: " + streak);
+                        binding.fragmentGameScoreboard.setTypeface(null, Typeface.ITALIC);
                         break;
                     case 3:
-                        binding.fragmentGameScoreboard.setText("Current Streak" + streak);
-                        break;
-                    case 4:
                     default:
-                        binding.fragmentGameScoreboard.setText("Current Score" + score);
+                        binding.fragmentGameScoreboard.setText("Current Score: " + score);
+                        binding.fragmentGameScoreboard.setTypeface(null, Typeface.NORMAL);
                 }
                 // increment
                 currentlyDisplayedScoreboard++;
-                if (currentlyDisplayedScoreboard == 5) {
+                if (currentlyDisplayedScoreboard == 4) {
                     currentlyDisplayedScoreboard = 0;
                 }
                 // delay
@@ -255,6 +277,7 @@ public class GameFragment extends Fragment {
             }
         };
 
+        // start it!
         nextScoreboard.run();
     }
 
@@ -264,33 +287,40 @@ public class GameFragment extends Fragment {
         }
         // show check or x mark, do stats
         binding.fragmentGameVs.setVisibility(View.GONE);
-        if (adapter.cards.get(0).date.isLaterThan(adapter.cards.get(1).date) == isBeforeDuringOrAfter) {
+        // prep sound
+        MediaPlayer player;
+        if (adapter.cards.get(1).date.isLaterThan(adapter.cards.get(0).date) == isBeforeDuringOrAfter) {
             // success
             binding.fragmentGameCheck.setVisibility(View.VISIBLE); // show check
             // stats
             streak++;
             score++;
-            if (streak > sessionHighStreak) {
-                sessionHighStreak++;
-            }
             if (streak > deck.highStreak) {
                 deck.highStreak++;
+                // write to file
+                masterDeckManager.writeSingleObjectToFile(masterDeck);
             }
             if (score > deck.highScore) {
                 deck.highScore++;
+                // write to file
+                masterDeckManager.writeSingleObjectToFile(masterDeck);
             }
             // sound
-            MediaPlayer player = MediaPlayer.create(requireContext(), R.raw.correct);
-            player.start();
+            player = MediaPlayer.create(requireContext(), R.raw.correct);
         } else {
             // failure
             binding.fragmentGameCross.setVisibility(View.VISIBLE); // show x
             // stats
             streak = 0;
             // sound
-            MediaPlayer player = MediaPlayer.create(requireContext(), R.raw.incorrect);
-            player.start();
+            player = MediaPlayer.create(requireContext(), R.raw.incorrect);
         }
+        // set volume
+        // must do it logarithmically
+        float logVolume = (float) (1 - Math.log(100-settingsFile.volume)/Math.log(100));
+        player.setVolume(logVolume, logVolume);
+        // play sound
+        player.start();
         // show the obscured card for two seconds, prevent user from doing anything
         adapter.obscure = false;
         this.deactivateButtons = true;
@@ -307,7 +337,7 @@ public class GameFragment extends Fragment {
                     // ending
                     Snackbar.make(
                             requireActivity().findViewById(android.R.id.content), // get root
-                            "You finished the game! Press back to return to the deck screen.",
+                            "Congratulations! You finished the game! Press back to return to the deck screen.",
                             BaseTransientBottomBar.LENGTH_SHORT
                     ).show(); // immediately show
                 } else {
@@ -325,7 +355,7 @@ public class GameFragment extends Fragment {
                     // add next to 1
                     adapter.cards.set(
                             1,
-                            chronologicalList.get(gameOrder.get(currentObscured))
+                            gameOrder.get(currentObscured)
                     );
                     // reload
                     adapter.notifyItemChanged(0);

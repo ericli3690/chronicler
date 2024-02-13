@@ -1,5 +1,7 @@
 package com.example.chronicler.datatypes;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
@@ -94,11 +96,36 @@ public class CardHeap extends ArrayList<Card> {
         int leftIndex = getLeftChildIndex(index);
         if (leftIndex < size()) { // this is a valid index
             Card leftCard = get(leftIndex);
-            if (get(earliestIndex).date.isLaterThan(leftCard.date) == 1) {
+            int doesLeftSideNeedSwap = get(earliestIndex).date.isLaterThan(leftCard.date);
+            if (doesLeftSideNeedSwap == 1) {
                 // a return value of 1 means "yes": the parent card IS later than the left card
                 // ie, something is wrong, the minheap property is not preserved
                 // we may need to swap the parent and left
                 earliestIndex = leftIndex;
+            } else if (doesLeftSideNeedSwap == 0) {
+                // they are the same year at the very least
+                // put the least specific (ie the one without the day or the month) further down
+
+                // possible cases:
+                //
+                //  parent  child
+                //  ymd     ymd
+                //  ymd     ym
+                //  ymd     y
+                //  ym      ymd         SWAP
+                //  ym      ym
+                //  ym      y
+                //  y       ymd         SWAP
+                //  y       ym          SWAP
+                //  y       y
+
+                if (get(earliestIndex).date.month == -1 && leftCard.date.month != -1) {
+                    // it has a month while we dont, swap
+                    earliestIndex = leftIndex;
+                } else if (get(earliestIndex).date.day == -1 && leftCard.date.day != -1) {
+                    // it has a day while we dont, swap
+                    earliestIndex = leftIndex;
+                }
             }
         }
         // unless right is EVEN larger...
@@ -106,9 +133,18 @@ public class CardHeap extends ArrayList<Card> {
         int rightIndex = getRightChildIndex(index);
         if (rightIndex < size()) {
             Card rightCard = get(rightIndex);
-            if (get(earliestIndex).date.isLaterThan(rightCard.date) == 1) {
+            int doesRightNeedSwap = get(earliestIndex).date.isLaterThan(rightCard.date);
+            if (doesRightNeedSwap == 1) {
                 // by similar logic to that stated above:
                 earliestIndex = rightIndex;
+            } else if (doesRightNeedSwap == 0) {
+                if (get(earliestIndex).date.month == -1 && rightCard.date.month != -1) {
+                    // it has a month while we dont, swap
+                    earliestIndex = rightIndex;
+                } else if (get(earliestIndex).date.day == -1 && rightCard.date.day != -1) {
+                    // it has a day while we dont, swap
+                    earliestIndex = rightIndex;
+                }
             }
         }
         // if earliestIndex is still equal to index, then this card is fine where it is
@@ -137,6 +173,22 @@ public class CardHeap extends ArrayList<Card> {
         if (size() > 0) { // if theres still a tree to rebalance
             siftDown(0); // rebalance the tree
         }
+
+        Log.d("A", Integer.toString(size()));
+        int lineLength = 1;
+        int lineCounter = 0;
+        StringBuilder output = new StringBuilder();
+        for (int i = 0; i < size(); i++) {
+            output.append(get(i).date.toString()).append("|");
+            lineCounter++;
+            if (lineCounter == lineLength) {
+                lineLength *= 2;
+                lineCounter = 0;
+                output.append("*").append("\n");
+            }
+        }
+        Log.d("B", output.toString());
+
         return toReturn; // return popped value
     }
 

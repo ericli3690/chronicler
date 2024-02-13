@@ -8,14 +8,15 @@ import androidx.annotation.NonNull;
 
 import com.example.chronicler.datatypes.Card;
 import com.example.chronicler.datatypes.CardChronologicalList;
+import com.example.chronicler.datatypes.SettingsFile;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class FullTimelineRecyclerViewAdapter extends ChronologicalTimelineRecyclerViewAdapter {
 
-    public FullTimelineRecyclerViewAdapter(CardChronologicalList chronologicalCards, Context context) {
-        super(chronologicalCards, context);
+    public FullTimelineRecyclerViewAdapter(CardChronologicalList chronologicalCards, Context context, SettingsFile settingsFile) {
+        super(chronologicalCards, context, settingsFile);
         this.checkedCardIndices = new ArrayList<Integer>();
     }
 

@@ -58,7 +58,7 @@ public class CardChronologicalList extends ArrayList<Card> {
             // this means yes
             return binarySearch(card, middle+1, last);
         } else if (isCardLaterThanMiddle < 0) {
-            // this means now
+            // this means no
             return binarySearch(card, first, middle-1);
         } else {
             // this means they are equal

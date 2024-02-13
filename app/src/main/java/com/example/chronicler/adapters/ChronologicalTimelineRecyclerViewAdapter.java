@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import com.example.chronicler.R;
 import com.example.chronicler.datatypes.Card;
 import com.example.chronicler.datatypes.CardChronologicalList;
+import com.example.chronicler.datatypes.SettingsFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,21 +17,14 @@ import java.util.List;
 public abstract class ChronologicalTimelineRecyclerViewAdapter extends TimelineRecyclerViewAdapter {
     protected CardChronologicalList chronologicalCards;
     protected CardChronologicalList renderedChronologicalCards;
-    private List<Card> flippedCards; // not chronological
     public List<Integer> checkedCardIndices;
-    private Context context;
+    private SettingsFile settingsFile;
 
-    public ChronologicalTimelineRecyclerViewAdapter() {
-        super();
-    }
-
-    public ChronologicalTimelineRecyclerViewAdapter(CardChronologicalList chronologicalCards, Context context) {
-        super();
+    public ChronologicalTimelineRecyclerViewAdapter(CardChronologicalList chronologicalCards, Context context, SettingsFile settingsFile) {
+        super(context);
         this.chronologicalCards = chronologicalCards;
         this.renderedChronologicalCards = new CardChronologicalList(this.chronologicalCards);
-        this.context = context;
-        // flips
-        this.flippedCards = new ArrayList<Card>();
+        this.settingsFile = settingsFile;
     }
 
     @Override
@@ -76,6 +70,10 @@ public abstract class ChronologicalTimelineRecyclerViewAdapter extends TimelineR
                 notifyItemChanged(renderedChronologicalCards.indexOf(card));
                 // play sound
                 MediaPlayer player = MediaPlayer.create(context, R.raw.flip);
+                // set volume
+                // must do it logarithmically
+                float logVolume = (float) (1 - Math.log(100-settingsFile.volume)/Math.log(100));
+                player.setVolume(logVolume, logVolume);
                 player.start();
             }
         });

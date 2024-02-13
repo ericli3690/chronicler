@@ -1,5 +1,7 @@
 package com.example.chronicler.adapters;
 
+import android.content.Context;
+import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
@@ -9,6 +11,7 @@ import androidx.annotation.NonNull;
 
 import com.example.chronicler.R;
 import com.example.chronicler.datatypes.Card;
+import com.example.chronicler.datatypes.SettingsFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,11 +21,16 @@ public class GameTimelineRecyclerViewAdapter extends TimelineRecyclerViewAdapter
     public List<Card> cards;
     public List<Card> flippedCards;
     public boolean obscure;
+    private Context context;
+    private SettingsFile settingsFile;
 
-    public GameTimelineRecyclerViewAdapter(List<Card> cards) {
+    public GameTimelineRecyclerViewAdapter(List<Card> cards, Context context, SettingsFile settingsFile) {
+        super(context);
         this.cards = cards;
         this.obscure = true;
         this.flippedCards = new ArrayList<Card>();
+        this.context = context;
+        this.settingsFile = settingsFile;
     }
 
     @Override
@@ -35,12 +43,12 @@ public class GameTimelineRecyclerViewAdapter extends TimelineRecyclerViewAdapter
         // get card instance associated with this viewholder
         Card card = cards.get(position);
         // set text
+        viewHolder.eventTv.setText(card.event);
         if (this.obscure && position == 1) {
-            viewHolder.eventTv.setText("██████████");
+            viewHolder.dateTv.setText("██████████");
         } else {
-            viewHolder.eventTv.setText(card.event);
+            viewHolder.dateTv.setText(card.date.toString());
         }
-        viewHolder.dateTv.setText(card.date.toString());
         viewHolder.infoTv.setText(card.info);
         // hide checkboxes; child classes can toggle back on
         viewHolder.checkBox.setVisibility(View.INVISIBLE);
@@ -70,6 +78,13 @@ public class GameTimelineRecyclerViewAdapter extends TimelineRecyclerViewAdapter
                 }
                 // update on screen
                 notifyItemChanged(cards.indexOf(card));
+                // play sound
+                MediaPlayer player = MediaPlayer.create(context, R.raw.flip);
+                // set volume
+                // must do it logarithmically
+                float logVolume = (float) (1 - Math.log(100-settingsFile.volume)/Math.log(100));
+                player.setVolume(logVolume, logVolume);
+                player.start();
             }
         });
     }

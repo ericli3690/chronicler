@@ -21,7 +21,6 @@ public class CardDate {
             "November",
             "December"
     };
-    private int[] monthLengths;
 
     // constructor
     public CardDate(int day, int month, int year) {

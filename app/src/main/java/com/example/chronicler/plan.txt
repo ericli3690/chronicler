@@ -1,14 +1,14 @@
 CURRERNT
 
-- send to ahyan for feedback
+- send to ahyan, kevin for feedback
+- actually run the test plan in crit b
+- refactor carddate leap year checker so it only runs if month = 2
 - import menu
     - preinstalled decks
     - api fetching
     - open files
+        - make sure this handles dates in the future with an error
 - export files
-
-CRIT E
-- custom delay when playing the game
 
 POLISH
 - document all code

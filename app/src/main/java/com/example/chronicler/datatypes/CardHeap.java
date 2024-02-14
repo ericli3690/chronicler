@@ -174,20 +174,21 @@ public class CardHeap extends ArrayList<Card> {
             siftDown(0); // rebalance the tree
         }
 
-        Log.d("A", Integer.toString(size()));
-        int lineLength = 1;
-        int lineCounter = 0;
-        StringBuilder output = new StringBuilder();
-        for (int i = 0; i < size(); i++) {
-            output.append(get(i).date.toString()).append("|");
-            lineCounter++;
-            if (lineCounter == lineLength) {
-                lineLength *= 2;
-                lineCounter = 0;
-                output.append("*").append("\n");
-            }
-        }
-        Log.d("B", output.toString());
+        // test code to print out heap as it is popped
+//        Log.d("A", Integer.toString(size()));
+//        int lineLength = 1;
+//        int lineCounter = 0;
+//        StringBuilder output = new StringBuilder();
+//        for (int i = 0; i < size(); i++) {
+//            output.append(get(i).date.toString()).append("|");
+//            lineCounter++;
+//            if (lineCounter == lineLength) {
+//                lineLength *= 2;
+//                lineCounter = 0;
+//                output.append("*").append("\n");
+//            }
+//        }
+//        Log.d("B", output.toString());
 
         return toReturn; // return popped value
     }

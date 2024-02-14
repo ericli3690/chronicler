@@ -25,7 +25,10 @@ import com.example.chronicler.functions.FileManager;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.time.Month;
+import java.time.Year;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -357,6 +360,11 @@ public class AddEditCardFragment extends Fragment {
         }
         // try turning it into an integer
         year = Integer.parseInt(stringYear);
+        // make sure its not in the future
+        int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+        if (year > currentYear) {
+            throw new NumberFormatException();
+        }
         // at this point, we can be sure year is valid
         // if the month is empty, end now
         if (stringMonth.equals("")) {
@@ -368,6 +376,11 @@ public class AddEditCardFragment extends Fragment {
             if (CardDate.isInvalidMonth(month)) {
                 throw new NumberFormatException();
             }
+            // make sure its not in the future
+            int currentMonth = Calendar.getInstance().get(Calendar.MONTH)+1; // counts from zero
+            if (year == currentYear && month > currentMonth) {
+                throw new NumberFormatException();
+            }
             // at this point, we can be sure month is valid
             // if the day is empty, end now
             if (stringDay.equals("")) {
@@ -377,6 +390,11 @@ public class AddEditCardFragment extends Fragment {
                 day = Integer.parseInt(stringDay);
                 // check that it is actually a day of this month and year
                 if (CardDate.isInvalidDay(day, month, year)) {
+                    throw new NumberFormatException();
+                }
+                // make sure its not in the future
+                int currentDay = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
+                if (year == currentYear && month == currentMonth && day > currentDay) {
                     throw new NumberFormatException();
                 }
                 // at this point, we can be sure day is valid

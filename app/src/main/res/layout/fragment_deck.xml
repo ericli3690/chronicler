@@ -28,17 +28,17 @@
             android:layout_height="wrap_content"
             android:text="Edit Deck"/>
 
-        <Button
-            android:id="@+id/fragment_deck_import"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Import Cards"/>
+<!--        <Button-->
+<!--            android:id="@+id/fragment_deck_import"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="Import Cards"/>-->
 
-        <Button
-            android:id="@+id/fragment_deck_export"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Export Cards"/>
+<!--        <Button-->
+<!--            android:id="@+id/fragment_deck_export"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="Export Cards"/>-->
 
         <Button
             android:id="@+id/fragment_deck_add"

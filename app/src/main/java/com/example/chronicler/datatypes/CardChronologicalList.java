@@ -4,6 +4,8 @@ import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 
+// a custom chronologicallist class
+// more efficient than java's arraylist at .indexOf(), .remove(), and .contains()
 public class CardChronologicalList extends ArrayList<Card> {
 
     // CardHeap.getChronologicalList() returns one of these
@@ -12,7 +14,8 @@ public class CardChronologicalList extends ArrayList<Card> {
     // allows the element to be indexed, removed, or determined if it is contained
     // in O(logn) time instead of O(n) time
     // binary search is implemented recursively rather than iteratively
-    // as it is more elegant this way
+    // as it is more elegant and readable this way
+
     // additionally, because two cards can have the SAME date but be DIFFERENT,
     // this algorithm will have to be a little less efficient than a normal binary search
     // consider the following array: 2004 2005 2005 2005 2006
@@ -37,6 +40,7 @@ public class CardChronologicalList extends ArrayList<Card> {
         super(cardChronologicalList);
     }
 
+    // main recursive function
     private int binarySearch(Card card, int first, int last) {
         if (last < first) {
             // this is the failure base case
@@ -55,10 +59,10 @@ public class CardChronologicalList extends ArrayList<Card> {
         );
         // check it
         if (isCardLaterThanMiddle > 0) {
-            // this means yes
+            // this means yes: do after middle
             return binarySearch(card, middle+1, last);
         } else if (isCardLaterThanMiddle < 0) {
-            // this means no
+            // this means no: do before middle
             return binarySearch(card, first, middle-1);
         } else {
             // this means they are equal
@@ -78,6 +82,8 @@ public class CardChronologicalList extends ArrayList<Card> {
             return -1;
         }
     }
+
+    // use this recursive function to do indexOf, remove, and contains
 
     @Override
     public int indexOf(@Nullable Object card) {

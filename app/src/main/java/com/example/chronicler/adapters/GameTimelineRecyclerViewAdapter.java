@@ -2,10 +2,7 @@ package com.example.chronicler.adapters;
 
 import android.content.Context;
 import android.media.MediaPlayer;
-import android.os.Handler;
-import android.os.Looper;
 import android.view.View;
-import android.widget.CompoundButton;
 
 import androidx.annotation.NonNull;
 
@@ -16,14 +13,20 @@ import com.example.chronicler.datatypes.SettingsFile;
 import java.util.ArrayList;
 import java.util.List;
 
+// the little window of ui that holds the cards that flash by during the game
+// basically like a timeline list, but with most of the functionality stripped away
 public class GameTimelineRecyclerViewAdapter extends TimelineRecyclerViewAdapter {
 
+    // cards and which cards are flipped
     public List<Card> cards;
     public List<Card> flippedCards;
+    // information about the ongoing game
     public boolean obscure;
+    // some background globals
     private Context context;
     private SettingsFile settingsFile;
 
+    // constructor
     public GameTimelineRecyclerViewAdapter(List<Card> cards, Context context, SettingsFile settingsFile) {
         super(context);
         this.cards = cards;
@@ -33,11 +36,14 @@ public class GameTimelineRecyclerViewAdapter extends TimelineRecyclerViewAdapter
         this.settingsFile = settingsFile;
     }
 
+    // mandatory, required by Android
     @Override
     public int getItemCount() {
         return cards.size();
     }
 
+    // when rendering:
+    // cast the information from the abstruct info to the ui as it scrolls by
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder viewHolder, int position) {
         // get card instance associated with this viewholder
@@ -78,13 +84,13 @@ public class GameTimelineRecyclerViewAdapter extends TimelineRecyclerViewAdapter
                 }
                 // update on screen
                 notifyItemChanged(cards.indexOf(card));
-                // play sound
+                // play sound for flipping
                 MediaPlayer player = MediaPlayer.create(context, R.raw.flip);
                 // set volume
                 // must do it logarithmically
                 float logVolume = (float) (1 - Math.log(100-settingsFile.volume)/Math.log(100));
                 player.setVolume(logVolume, logVolume);
-                player.start();
+                player.start(); // play the sound!
             }
         });
     }

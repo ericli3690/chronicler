@@ -1,14 +1,9 @@
 package com.example.chronicler;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
-import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import android.os.Bundle;
@@ -18,23 +13,23 @@ import com.example.chronicler.datatypes.Deck;
 import com.example.chronicler.datatypes.SettingsFile;
 import com.example.chronicler.functions.FileManager;
 
-import java.util.ArrayList;
-import java.util.List;
-
+// main entry point of app
 public class MainActivity extends AppCompatActivity {
 
+    // files and file managers for public use
     public FileManager<Deck> masterDeckManager;
     public Deck masterDeck;
     public FileManager<SettingsFile> settingsFileManager;
     public SettingsFile settingsFile;
 
+    // when the app first runs, this is called
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // initialize activity
         super.onCreate(savedInstanceState);
         ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        // get toolbar
+        // get toolbar that appears at the top
         Toolbar toolbar = (Toolbar) findViewById(R.id.activity_main_toolbar);
         setSupportActionBar(toolbar);
         
@@ -65,12 +60,13 @@ public class MainActivity extends AppCompatActivity {
         }
         
         // set navigation between fragments
+        // this class contains the navhost that controls all navigation
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.activity_main_navigator_container);
         NavController navController = navHostFragment.getNavController();
         NavigationUI.setupActionBarWithNavController(this, navController);
     }
 
-    // when the up button is pressed, move back one screen
+    // when the up button in the top left corner is pressed, move back one screen
     @Override
     public boolean onSupportNavigateUp() {
         getOnBackPressedDispatcher().onBackPressed();

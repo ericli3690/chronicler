@@ -1,7 +1,7 @@
 package com.example.chronicler.datatypes;
 
+// data structure for holding settings information when writing to the file
 public class SettingsFile {
-    // data structure for holding settings information when writing to the file
 
     // instance vars
     public int volume;

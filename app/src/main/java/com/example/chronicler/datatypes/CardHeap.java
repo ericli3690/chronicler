@@ -1,13 +1,12 @@
 package com.example.chronicler.datatypes;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+// a binary min-heap implemenetation used for storing cards efficiently
 public class CardHeap extends ArrayList<Card> {
 
     // allows cards to be sorted efficiently (heapsort)
@@ -65,6 +64,7 @@ public class CardHeap extends ArrayList<Card> {
         set(index2, temp);
     }
 
+    // move a card upward until it is in the right place
     private void siftUp(int index) {
         // has a time complexity of O(logn)
 
@@ -77,7 +77,7 @@ public class CardHeap extends ArrayList<Card> {
         // get cards
         Card childCard = get(index);
         int parentIndex = getParentIndex(index);
-        Card parentCard = get(getParentIndex(index));
+        Card parentCard = get(parentIndex);
 
         // compare child with parent
         if (childCard.date.isLaterThan(parentCard.date) == -1) {
@@ -90,7 +90,11 @@ public class CardHeap extends ArrayList<Card> {
         } // if this while loop is NOT the case, then we are done; do nothing
     }
 
+    // move a card downward until it is in the right place
     private void siftDown(int index) {
+        // has a time complexity of O(logn)
+
+        // temporarily state this index as the earliest one we have found thus far
         int earliestIndex = index;
         // compare to left
         int leftIndex = getLeftChildIndex(index);
@@ -128,7 +132,7 @@ public class CardHeap extends ArrayList<Card> {
                 }
             }
         }
-        // unless right is EVEN larger...
+        // unless right is EVEN earlier...
         // compare to right
         int rightIndex = getRightChildIndex(index);
         if (rightIndex < size()) {
@@ -165,7 +169,9 @@ public class CardHeap extends ArrayList<Card> {
             siftDown(siftIndex);
         }
     }
-    
+
+    // get the top element and remove it
+    // need to rebalance too
     private Card popRoot() {
         Card toReturn = get(0); // read root
         set(0, get(size()-1)); // overwrite root
@@ -193,7 +199,7 @@ public class CardHeap extends ArrayList<Card> {
         return toReturn; // return popped value
     }
 
-    // override add
+    // override add so that it when cards are added it is done in a heap way
     @Override
     public boolean add(Card card) {
         super.add(card); // add at end
@@ -202,6 +208,7 @@ public class CardHeap extends ArrayList<Card> {
     }
 
     // override addall
+    // similar to above: make sure that adding is done in a heap way
     @Override
     public boolean addAll(@NonNull Collection<? extends Card> cards) {
         super.addAll(cards); // add all at end
@@ -213,12 +220,13 @@ public class CardHeap extends ArrayList<Card> {
     // uses the custon cardchronologicallist datatype i created
     // which allows for a binary search to be performed
     // for indexOf(), remove(), and contains()
+    // runs in O(nlogn), since popRoot is O(logn) and happens n times
     public CardChronologicalList getChronologicalList() {
-        CardChronologicalList toReturn = new CardChronologicalList();
+        CardChronologicalList toReturn = new CardChronologicalList(); // will create a chronological list
         CardHeap temp = new CardHeap(this); // clone so the original is not deleted
         while (temp.size() > 0) { // while cards remain in it
-            toReturn.add(temp.popRoot());
+            toReturn.add(temp.popRoot()); // pop everything out
         }
-        return toReturn;
+        return toReturn; // return it
     }
 }

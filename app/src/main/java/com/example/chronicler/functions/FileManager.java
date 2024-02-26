@@ -2,9 +2,7 @@ package com.example.chronicler.functions;
 
 import android.app.Activity;
 import android.content.Context;
-import android.util.Log;
 
-import com.example.chronicler.datatypes.Deck;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
@@ -31,6 +29,8 @@ public class FileManager<T> {
         this.objectClass = objectClass;
         this.activity = activity;
         // uses gson, a package for writing between objects and json
+        // source: https://github.com/google/gson
+        // source: https://www.tutorialspoint.com/gson/gson_quick_guide.htm
         this.builder = new GsonBuilder();
         this.gson = builder.create();
     }

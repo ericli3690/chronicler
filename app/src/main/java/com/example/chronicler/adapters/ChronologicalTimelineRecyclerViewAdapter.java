@@ -11,15 +11,23 @@ import com.example.chronicler.datatypes.Card;
 import com.example.chronicler.datatypes.CardChronologicalList;
 import com.example.chronicler.datatypes.SettingsFile;
 
-import java.util.ArrayList;
 import java.util.List;
 
+// parent of partial and full timeline recycler view adapters
+// contains methods and code dealing with the fact that the list is chronological
+// does not apply to gametimelinerecyclerviewadapter, hence why it diverges off on its own in the inheritance tree
+// (see timelinerecyclerviewadapter.java for diagram)
 public abstract class ChronologicalTimelineRecyclerViewAdapter extends TimelineRecyclerViewAdapter {
+
+    // the cards that will be shown
     protected CardChronologicalList chronologicalCards;
     protected CardChronologicalList renderedChronologicalCards;
+    // which are checked
     public List<Integer> checkedCardIndices;
+    // some other important background info
     private SettingsFile settingsFile;
 
+    // easy constructor
     public ChronologicalTimelineRecyclerViewAdapter(CardChronologicalList chronologicalCards, Context context, SettingsFile settingsFile) {
         super(context);
         this.chronologicalCards = chronologicalCards;
@@ -27,11 +35,14 @@ public abstract class ChronologicalTimelineRecyclerViewAdapter extends TimelineR
         this.settingsFile = settingsFile;
     }
 
+    // android-required method
     @Override
     public int getItemCount() {
         return renderedChronologicalCards.size();
     }
 
+    // casting the abstract information to the ui elements
+    // ex. setting text, checkboxes
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder viewHolder, int position) {
         // get card instance associated with this viewholder
@@ -74,11 +85,12 @@ public abstract class ChronologicalTimelineRecyclerViewAdapter extends TimelineR
                 // must do it logarithmically
                 float logVolume = (float) (1 - Math.log(100-settingsFile.volume)/Math.log(100));
                 player.setVolume(logVolume, logVolume);
-                player.start();
+                player.start(); // play sound!
             }
         });
     }
 
+    // find all without a search term and hide them
     public void hideAllWithoutSearchTerm(String searchTerm) {
         // reset rendered list
         this.renderedChronologicalCards = new CardChronologicalList();
@@ -89,10 +101,12 @@ public abstract class ChronologicalTimelineRecyclerViewAdapter extends TimelineR
             boolean thisContainsSearchTerm = false;
             if (card.event.toUpperCase().contains(searchTerm.toUpperCase())) {
                 thisContainsSearchTerm = true;
+                // this one is fine, has a matching name
             } else {
                 for (String tag : card.tags) {
                     if (tag.equalsIgnoreCase(searchTerm)) {
                         thisContainsSearchTerm = true;
+                        // this one has a matching tag
                     }
                 }
             }

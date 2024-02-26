@@ -1,23 +1,26 @@
 package com.example.chronicler.datatypes;
 
-import android.os.Parcelable;
-
 import com.example.chronicler.functions.Sorter;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 
+// one of the key elements of this solution
+// the decks that contain cards
 public class Deck {
     // instance vars
     public String name;
+    // the decks it contains
     public List<Deck> children;
+    // the cards it immediately contains
     public CardHeap cards;
+    // leaderboard statistics
     public int highStreak;
     public int highScore;
 
     // private utilities
+    // defines how to compare two decks by name, alphabetically
     private final static Sorter<Deck> sorter = new Sorter<Deck>(new Comparator<Deck>() {
         @Override
         public int compare(Deck deck1, Deck deck2) {
@@ -28,7 +31,7 @@ public class Deck {
         }
     });;
 
-    // constructor
+    // simple constructor
     public Deck(String name) {
         this.name = name;
         this.children = new ArrayList<Deck>();
@@ -37,11 +40,13 @@ public class Deck {
         this.highStreak = 0;
     }
 
+    // quick public exposed utility function, protects private methods
     public void doSortChildren() {
         this.children = this.sortChildren();
     }
 
-    // sort
+    // sort the children of this deck alphabetically
+    // runs recursively, calls itself on the children
     private List<Deck> sortChildren() {
         List<Deck> toSort = new ArrayList<Deck>();
         for (Deck child : this.children) {
@@ -61,6 +66,8 @@ public class Deck {
         return toSort; // now sorted
     }
 
+    // turn the multi-level hierarchy of decks into a single linear list
+    // sort of like "flattening" it down
     public List<Deck> getFlattenedList() {
         // a depth-first search of the deck tree
         List<Deck> toReturn = new ArrayList<Deck>();
@@ -70,7 +77,7 @@ public class Deck {
             // therefore do nothing
             // this is the base case
         } else { // there are children
-            // flatted them
+            // flatten them
             // add them to the flattened list
             // this is the recursive case
             for (Deck child : this.children) {
@@ -82,6 +89,7 @@ public class Deck {
     }
 
     // main call into hierarchy
+    // publicly exposed for use, allows other methods to be hidden and kept safe
     public List<Integer> getHierarchy() {
         List<Integer> toReturn = new ArrayList<Integer>();
         this.hierarchy(-1, toReturn);
@@ -90,9 +98,10 @@ public class Deck {
 
     // get a list of pointers to parents, SUCH THAT:
     //      masterDeck.getFlattenedList().indexOf(masterDeck.getHierarchy().get(child)) = parent
+    // basically the nth index of the list this returns is an index m, where the card at m is the parent of the card at n
     private void hierarchy(int parentLocation, List<Integer> toReturn) {
         // a depth first search of the deck tree
-        toReturn.add(parentLocation); // at this deck's position, insert data pointing to its parent location
+        toReturn.add(parentLocation); // at this deck's position, insert an index pointing to this card's parent location
         if (this.children.size() == 0) { // no children, nothing more to do
             // this is the base case
         } else { // there are children
@@ -106,21 +115,25 @@ public class Deck {
         }
     }
 
+    // publicly exposed way to get all cards, hides the collectcardheaps method
     public CardHeap getAllCards() {
         return new CardHeap(this.collectCardHeaps());
     }
 
+    // recursively grabs all the cards held by the decks this deck is a parent to
+    // and puts them into a single heap
     private List<CardHeap> collectCardHeaps() {
-        List<CardHeap> cardHeaps = new ArrayList<CardHeap>();
-        cardHeaps.add(this.cards);
-        for (Deck child : children) {
-            cardHeaps.addAll(
-                    child.collectCardHeaps()
+        List<CardHeap> cardHeaps = new ArrayList<CardHeap>(); // prepare
+        cardHeaps.add(this.cards); // add these cards
+        for (Deck child : children) { // for each child
+            cardHeaps.addAll( // add those heaps too!
+                    child.collectCardHeaps() // recursive call
             );
         }
-        return cardHeaps;
+        return cardHeaps; // then return upward
     }
 
+    // given a card, find the deck that contains it
     public Deck getDeckContainingCard(Card cardToFind) {
         // assumes the card is located somewhere in this deck's children
         // first, check itself

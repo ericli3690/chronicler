@@ -18,10 +18,13 @@ import com.example.chronicler.databinding.FragmentSettingsBinding;
 import com.example.chronicler.datatypes.SettingsFile;
 import com.example.chronicler.functions.FileManager;
 
+// the simple screen that shows the settings
 public class SettingsFragment extends Fragment {
 
+    // ui control
     private FragmentSettingsBinding binding;
 
+    // android-required start method
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // handle binding
@@ -29,6 +32,7 @@ public class SettingsFragment extends Fragment {
         return binding.getRoot();
     }
 
+    // main:
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -39,22 +43,22 @@ public class SettingsFragment extends Fragment {
         // set toolbar
         ((Toolbar) requireActivity().findViewById(R.id.activity_main_toolbar)).setTitle("Settings");
 
-        // back button
+        // back button functionality: return to home
         requireActivity().getOnBackPressedDispatcher().addCallback(requireActivity(), new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
                 NavHostFragment.findNavController(SettingsFragment.this).navigate(
                         SettingsFragmentDirections.actionSettingsFragmentToHomeFragment(false)
                 );
-                this.setEnabled(false);
+                this.setEnabled(false); // disable this back function so the next one can take over
             }
         });
 
-        // set progress
+        // set progress on the sliders
         binding.fragmentSettingsSfx.setProgress(settingsFile.volume);
         binding.fragmentSettingsDifficulty.setProgress(settingsFile.percentDifficulty);
 
-        // onclick
+        // onclick for the done button
         binding.fragmentSettingsDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

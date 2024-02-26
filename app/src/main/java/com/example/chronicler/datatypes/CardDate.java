@@ -2,11 +2,15 @@ package com.example.chronicler.datatypes;
 
 import androidx.annotation.NonNull;
 
+// class for storing dates in a special, custom way
 public class CardDate {
+
     // instance vars
     public int day;
     public int month;
     public int year;
+
+    // static, final information about months
     private static final String[] monthNames = {
             "January",
             "February",
@@ -21,14 +25,29 @@ public class CardDate {
             "November",
             "December"
     };
+    private static final int[] monthLengths = {
+            31, // january
+            28, // february
+            31, // march
+            30, // april
+            31, // may
+            30, // june
+            31, // july
+            31, // august
+            30, // september
+            31, // october
+            30, // november
+            31  // december
+    };
 
-    // constructor
+    // simple constructor
     public CardDate(int day, int month, int year) {
         this.day = day;
         this.month = month;
         this.year = year;
     }
 
+    // for display
     @NonNull
     @Override
     public String toString() {
@@ -43,6 +62,7 @@ public class CardDate {
         );
     }
 
+    // for comparing two dates
     public int isLaterThan(CardDate other) {
 
         // returns 1 (yes), -1 (no), and 0 (they are the same)
@@ -89,6 +109,7 @@ public class CardDate {
 
     }
 
+    // validate months
     public static boolean isInvalidMonth(int month) {
         if (month < 1 || month > 12) {
             return true;
@@ -97,6 +118,8 @@ public class CardDate {
         }
     }
 
+    // validates days
+    // includes clause for leap years
     public static boolean isInvalidDay(int day, int month, int year) {
         // the too-low test is easy enough
         if (day < 1) {
@@ -105,49 +128,38 @@ public class CardDate {
 
         //// but is the day too high?
 
-        // calculate leap year
-        // there are far more succinct ways of writing this
-        // but i believe this shows my thinking thinking most clearly
+        // first, is it a leap year day
 
-        boolean isLeapYear;
+        if (month == 2 && day == 29) {
 
-        if (year % 4 == 0) {
-            // divisible by 4: its a leap year!
-            // unless... its divisble by 100?
-            if (year % 100 == 0) {
-                // divisible by 100: its NOT a leap year!
-                // unless... its divisible by 400?
-                if (year % 400 == 0) {
-                    // divisible by 400: its a leap year!
-                    isLeapYear = true;
+            // calculate leap year
+            // there are far more succinct ways of writing this
+            // but i believe this shows my thinking thinking most clearly
+
+            if (year % 4 == 0) {
+                // divisible by 4: its a leap year!
+                // unless... its divisble by 100?
+                if (year % 100 == 0) {
+                    // divisible by 100: its NOT a leap year!
+                    // unless... its divisible by 400?
+                    if (year % 400 == 0) {
+                        // divisible by 400: its a leap year!
+                        return false; // we're fine
+                    } else {
+                        // apparently not; its not a leap year
+                        return true; // there is an error
+                    }
                 } else {
-                    // apparently not; its not a leap year
-                    isLeapYear = false;
+                    // apparently not; its a leap year
+                    return false; // we're fine
                 }
             } else {
-                // apparently not; its a leap year
-                isLeapYear = true;
+                // not divisible by 4: is not a leap year
+                return true; // there is an error
             }
-        } else {
-            // not divisible by 4: is not a leap year
-            isLeapYear = false;
         }
 
-        // calculate month lengths
-        int[] monthLengths = {
-                31,                             // january
-                isLeapYear ? 29 : 28,           // february
-                31,                             // march
-                30,                             // april
-                31,                             // may
-                30,                             // june
-                31,                             // july
-                31,                             // august
-                30,                             // september
-                31,                             // october
-                30,                             // november
-                31                              // december
-        };
+        // otherwise
 
         if (day > monthLengths[month-1]) {
             // too high

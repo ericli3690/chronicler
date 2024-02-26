@@ -19,16 +19,15 @@ import com.example.chronicler.adapters.HomeRecyclerViewAdapter;
 import com.example.chronicler.R;
 import com.example.chronicler.databinding.FragmentHomeBinding;
 import com.example.chronicler.datatypes.Deck;
-import com.example.chronicler.fragments.HomeFragmentDirections.ActionHomeFragmentToAddEditDeckFragment;
-import com.example.chronicler.functions.FileManager;
 
-import java.util.ArrayList;
-import java.util.List;
-
+// the main fragment that displays on the home page
+// shows all the decks
 public class HomeFragment extends Fragment {
 
+    // ui control
     private FragmentHomeBinding binding;
 
+    // android-required method for initialization
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -37,27 +36,29 @@ public class HomeFragment extends Fragment {
         return binding.getRoot();
     }
 
+    // main:
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // grab data
+        // grab data from activity
         Deck masterDeck = ((MainActivity) requireActivity()).masterDeck;
 
         // set title
         ((Toolbar) requireActivity().findViewById(R.id.activity_main_toolbar)).setTitle("Chronicler");
 
-        // get recyclerview
+        // get recyclerview for list
         RecyclerView deckRv = binding.fragmentHomeRv;
-        // set layout
+        // set layout as linear, top to bottom
         deckRv.setLayoutManager(new LinearLayoutManager(requireContext()));
-        // set divider
+        // show a divider
         deckRv.addItemDecoration(new DividerItemDecoration(deckRv.getContext(), DividerItemDecoration.VERTICAL));
-        // set adapter
+        // set adapter, which shows a list of decks
         HomeRecyclerViewAdapter adapter = new HomeRecyclerViewAdapter(masterDeck, masterDeck, requireContext(), requireActivity(), this);
         deckRv.setAdapter(adapter);
 
-        // set onclicks
+        // set onclicks for the add and settings buttons
+        // each navigates to their respective screen using navhost
         binding.fragmentHomeAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

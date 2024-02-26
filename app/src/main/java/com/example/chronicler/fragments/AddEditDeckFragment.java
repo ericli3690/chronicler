@@ -1,23 +1,19 @@
 package com.example.chronicler.fragments;
 
-import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentResultListener;
 import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RadioButton;
 
 import com.example.chronicler.MainActivity;
 import com.example.chronicler.R;
@@ -25,24 +21,30 @@ import com.example.chronicler.databinding.FragmentAddEditDeckBinding;
 import com.example.chronicler.datatypes.Deck;
 import com.example.chronicler.functions.DeleteConfirmation;
 import com.example.chronicler.functions.FileManager;
-import com.example.chronicler.fragments.AddEditDeckFragmentDirections.ActionAddEditDeckFragmentToDeckFragment;
-import com.example.chronicler.fragments.AddEditDeckFragmentDirections.ActionAddEditDeckFragmentToHomeFragment;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
 
+// screen where you can either add or edit decks
+// depending on which parameters this screen is opened with, both can happen
 public class AddEditDeckFragment extends Fragment {
 
+    // ui control
     private FragmentAddEditDeckBinding binding;
-    private boolean isNew; // controls whether this is adddeck or editdeck
+    // controls whether this is adddeck or editdeck
+    private boolean isNew;
+    // what deck is this
     private int deckIndex;
     private int parentIndex;
+    // information about complete file system
     private FileManager<Deck> masterDeckManager;
     private Deck masterDeck;
+    // which deck is currently checked by the user on the parent deck selection list
     private int checkedIndex;
 
+    // android-required ui initialization method
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -51,6 +53,7 @@ public class AddEditDeckFragment extends Fragment {
         return binding.getRoot();
     }
 
+    // main:
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -65,18 +68,19 @@ public class AddEditDeckFragment extends Fragment {
         masterDeck = ((MainActivity) requireActivity()).masterDeck;
         List<Deck> flattenedList = masterDeck.getFlattenedList();
 
-        // set back button
+        // set back button functionality
         requireActivity().getOnBackPressedDispatcher().addCallback(requireActivity(), new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
                 NavDirections action;
+                // where it goes back to depends on whether this is adddeck or editdeck
                 if (isNew) {
                     action = AddEditDeckFragmentDirections.actionAddEditDeckFragmentToHomeFragment(false);
                 } else {
                     action = AddEditDeckFragmentDirections.actionAddEditDeckFragmentToDeckFragment(deckIndex, parentIndex);
                 }
                 NavHostFragment.findNavController(AddEditDeckFragment.this).navigate(action);
-                this.setEnabled(false);
+                this.setEnabled(false); // disable this back function so the next one can take over
             }
         });
 
@@ -85,24 +89,26 @@ public class AddEditDeckFragment extends Fragment {
             binding.fragmentAddEditDeckDelete.setVisibility(View.GONE);
         }
 
-        //// create parent deck list
+        //// create parent deck radio list
         // generate programmatically from flattened list
         // and put in the radiolistfragment
         Bundle radioListBundle = new Bundle();
 
-        // get names
+        // get names of all the decks
+        // and give it to the radiolist
         ArrayList<String> names = new ArrayList<String>();
         for (Deck deck : flattenedList) {
             names.add(deck.name);
         }
         radioListBundle.putStringArrayList("names", names);
 
-        // get selected
-        if (isNew) {
+        // get selected radio; essentially, what is the current parent deck
+        if (isNew) { // we are creating
             // save it and show it in the radio list
             radioListBundle.putInt("checked", 0);
             this.checkedIndex = 0;
-        } else {
+        } else { // we are editing
+            // set the title to be the name of hte deck we are editing
             binding.fragmentAddEditDeckName.setText(flattenedList.get(this.deckIndex).name);
             // likewise
             radioListBundle.putInt("checked", this.parentIndex);
@@ -124,7 +130,7 @@ public class AddEditDeckFragment extends Fragment {
             }
         });
 
-        // set toolbar
+        // set toolbar text
         ((Toolbar) requireActivity().findViewById(R.id.activity_main_toolbar)).setTitle(
                 this.isNew ? "Add Deck" : "Edit Deck: " + flattenedList.get(this.deckIndex).name);
 
@@ -138,7 +144,7 @@ public class AddEditDeckFragment extends Fragment {
                     Deck parent = flattenedList.get(parentIndex);
                     Deck child = flattenedList.get(deckIndex);
                     parent.children.remove(child);
-                    // sort alphabetically by name
+                    // sort all decks alphabetically by name
                     masterDeck.doSortChildren();
                     // write to file
                     masterDeckManager.writeSingleObjectToFile(masterDeck);
@@ -148,14 +154,14 @@ public class AddEditDeckFragment extends Fragment {
                     );
                 }
             },
-            requireContext()
+            requireContext() // needs some other android information
         ));
 
         //// done button onclick
         binding.fragmentAddEditDeckDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // get name
+                // get name that was chosen
                 String name = binding.fragmentAddEditDeckName.getText().toString();
                 // get clicked parent deck
                 Deck parentDeck = flattenedList.get(checkedIndex);
@@ -187,9 +193,9 @@ public class AddEditDeckFragment extends Fragment {
                 }
                 // write to file
                 masterDeck.doSortChildren();
-                // sort alphabetically by name
+                // sort decks alphabetically by name
                 masterDeckManager.writeSingleObjectToFile(masterDeck);
-                // get indices
+                // get indices of new / edited deck
                 List<Deck> flattenedList = masterDeck.getFlattenedList();
                 deckIndex = flattenedList.indexOf(childDeck);
                 // find the clicked deck's parent; get its position in the flattened list

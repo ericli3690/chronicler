@@ -17,16 +17,19 @@ import com.example.chronicler.MainActivity;
 import com.example.chronicler.R;
 import com.example.chronicler.databinding.FragmentDeckBinding;
 import com.example.chronicler.datatypes.Deck;
-import com.example.chronicler.functions.FileManager;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
+// deck fragment
 public class DeckFragment extends Fragment {
 
+    // ui control
     private FragmentDeckBinding binding;
+    // which deck is this screen open for?
     private int deckIndex;
     private int parentIndex;
 
+    // android-required initialization method
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -35,6 +38,7 @@ public class DeckFragment extends Fragment {
         return binding.getRoot();
     }
 
+    // main:
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -56,17 +60,18 @@ public class DeckFragment extends Fragment {
         binding.fragmentDeckName.setText(deck.name);
 
         //// onclicks
-        // back button
+        // back button functionality: return to home
         requireActivity().getOnBackPressedDispatcher().addCallback(requireActivity(), new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
                 NavHostFragment.findNavController(DeckFragment.this).navigate(
                         DeckFragmentDirections.actionDeckFragmentToHomeFragment(false)
                 );
-                this.setEnabled(false);
+                this.setEnabled(false); // disable this back function so the next one can take over
             }
         });
         // all other buttons
+        // edit this deck
         binding.fragmentDeckEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -75,6 +80,7 @@ public class DeckFragment extends Fragment {
                 );
             }
         });
+        // add a new card
         binding.fragmentDeckAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -84,21 +90,24 @@ public class DeckFragment extends Fragment {
                 );
             }
         });
+        // look at the timeline or edit cards
         binding.fragmentDeckTimeline.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 NavHostFragment.findNavController(DeckFragment.this).navigate(
-                        DeckFragmentDirections.actionDeckFragmentToTimelineFragment(deckIndex, parentIndex, true, "", 0)
+                        DeckFragmentDirections.actionDeckFragmentToTimelineFragment(deckIndex, parentIndex, true, "", 0, 0, 0)
                 );
             }
         });
+        // play the game
         binding.fragmentDeckGame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // dont allow if there arent enough cards
-                if (deck.cards.size() > 1) {
+                if (deck.getAllCards().size() > 1) {
+                    // start the game!
                     NavHostFragment.findNavController(DeckFragment.this).navigate(
-                            DeckFragmentDirections.actionDeckFragmentToGameFragment(deckIndex, parentIndex, "", 0)
+                            DeckFragmentDirections.actionDeckFragmentToGameFragment(deckIndex, parentIndex, "", 0, 0, 0)
                     );
                 } else {
                     // there is only one card or no cards

@@ -1,11 +1,10 @@
 package com.example.chronicler.functions;
 
-import com.example.chronicler.datatypes.Deck;
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+// class that runs mergesort
 public class Sorter<T> {
 
     // instance vars
@@ -16,7 +15,7 @@ public class Sorter<T> {
         this.comparator = comparator;
     }
 
-    // need a fast, stable sort
+    // need a fast, stable, dependable sort
     // hence, using recursive mergesort
     public void doSort(List<T> toSort) {
         this.sort(toSort, 0, toSort.size()-1);
@@ -25,7 +24,9 @@ public class Sorter<T> {
     // the recursive function
     private void sort(List<T> toSort, int left, int right) {
         // base case
-        if (left >= right) { // the subarray in the range [left, right] is empty or has only one element, is already sorted
+        // the subarray in the range [left, right] is
+        // empty or has only one element, is already sorted
+        if (left >= right) {
             return;
         }
         // recursive case
@@ -38,10 +39,10 @@ public class Sorter<T> {
 
     // merge helper function
     private void merge(List<T> toSort, int leftStart, int leftEnd, int rightStart, int rightEnd) {
-        // init pointers
+        // initialize pointers
         int left = leftStart;
         int right = rightStart;
-        // init a temporary list
+        // initialize a temporary list
         List<T> temp = new ArrayList<T>();
         // start
         while (left <= leftEnd && right <= rightEnd) {

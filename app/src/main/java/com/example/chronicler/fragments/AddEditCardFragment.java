@@ -25,26 +25,34 @@ import com.example.chronicler.functions.FileManager;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
-import java.time.Month;
-import java.time.Year;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+// screen for either adding or editings cards
+// depends on which parameters it is provided on creation
+// if it is supplied with information about a card, it will allow the user to edit it
+// otherwise, it will let the user create a new card
+// can also allow the user to edit multiple cards at once: bulk edit
 public class AddEditCardFragment extends Fragment {
 
+    // ui control
     private FragmentAddEditCardBinding binding;
+    // which deck does this belong to?
     private int deckIndex;
     private int parentIndex;
+    // which cards are we editing
     private String cardIndices;
+    // what is the NEW parent deck index?
     private int checkedIndex;
+    // get all decks and cards
     private Deck masterDeck;
     private FileManager<Deck> masterDeckManager;
 
+    // android-required ui initialization method
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // handle binding
@@ -52,18 +60,19 @@ public class AddEditCardFragment extends Fragment {
         return binding.getRoot();
     }
 
+    // main:
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // back button
+        // back button functionality: return to deck
         requireActivity().getOnBackPressedDispatcher().addCallback(requireActivity(), new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
                 NavHostFragment.findNavController(AddEditCardFragment.this).navigate(
                         AddEditCardFragmentDirections.actionAddEditCardFragmentToDeckFragment(deckIndex, parentIndex)
                 );
-                this.setEnabled(false);
+                this.setEnabled(false); // disable this back function so the next one can take over
             }
         });
 
@@ -75,22 +84,23 @@ public class AddEditCardFragment extends Fragment {
         masterDeckManager = ((MainActivity) requireActivity()).masterDeckManager;
         masterDeck = ((MainActivity) requireActivity()).masterDeck;
         List<Deck> flattenedList = masterDeck.getFlattenedList();
-
+        // get the cards of this deck
         Deck deck = flattenedList.get(deckIndex);
         CardChronologicalList deckCards = deck.getAllCards().getChronologicalList();
 
         //// if is add card
         if (cardIndices.length() == 0) {
+            // set toolbar as such
             ((Toolbar) requireActivity().findViewById(R.id.activity_main_toolbar)).setTitle("Add Card");
 
-            // back button
+            // back button functionality: will need to return to deck fragment
             requireActivity().getOnBackPressedDispatcher().addCallback(requireActivity(), new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
                     NavHostFragment.findNavController(AddEditCardFragment.this).navigate(
                             AddEditCardFragmentDirections.actionAddEditCardFragmentToDeckFragment(deckIndex, parentIndex)
                     );
-                    this.setEnabled(false);
+                    this.setEnabled(false); // disable this back function so the next one can take over
                 }
             });
             // hide delete button
@@ -99,10 +109,11 @@ public class AddEditCardFragment extends Fragment {
             // no need to worry about the radiolist, hide it
             binding.fragmentAddEditCardLinearEdit.setVisibility(View.GONE);
 
-            // done onclick
+            // done button onclick
             binding.fragmentAddEditCardDone.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    // try to create a new card
                     Card newCard;
                     try {
                         newCard = getCardFromInputs(); // abstracted away so that edit (single) can also use it
@@ -115,10 +126,12 @@ public class AddEditCardFragment extends Fragment {
                         ).show(); // immediately show
                         return; // break out
                     }
+                    // otherwise, successful! add the card
                     deck.cards.add(newCard);
                     // write to file
                     masterDeckManager.writeSingleObjectToFile(masterDeck);
                     // clear all textviews
+                    // this allows the user to add another card instantly if they so choose
                     binding.fragmentAddEditCardEvent.setText("");
                     binding.fragmentAddEditCardDay.setText("");
                     binding.fragmentAddEditCardMonth.setText("");
@@ -137,19 +150,20 @@ public class AddEditCardFragment extends Fragment {
         } else {
             //// else, is edit card
 
-            // back button
+            // back button functionality
+            // need to return to timeline
             requireActivity().getOnBackPressedDispatcher().addCallback(requireActivity(), new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
                     NavHostFragment.findNavController(AddEditCardFragment.this).navigate(
-                            AddEditCardFragmentDirections.actionAddEditCardFragmentToTimelineFragment(deckIndex, parentIndex, true, "", 0)
+                            AddEditCardFragmentDirections.actionAddEditCardFragmentToTimelineFragment(deckIndex, parentIndex, true, "", 0, 0, 0)
                     );
-                    this.setEnabled(false);
+                    this.setEnabled(false); // disable this back function so the next one can take over
                 }
             });
 
             //// get cards list
-            // split apart
+            // split it apart
             String[] stringArrayCardIndices = cardIndices.split(" ");
             // convert to ints
             int[] intArrayCardIndices = new int[stringArrayCardIndices.length];
@@ -168,7 +182,7 @@ public class AddEditCardFragment extends Fragment {
                 names.add(deckInList.name);
             }
             radioListBundle.putStringArrayList("names", names);
-            //// if there is only one
+            //// if there is only one, we are only editing ONE card
             if (cards.size() == 1) {
                 //// single edit
                 Card card = cards.get(0);
@@ -181,13 +195,14 @@ public class AddEditCardFragment extends Fragment {
                 this.checkedIndex = flattenedList.indexOf(cardDirectOwner);
                 radioListBundle.putInt("checked", this.checkedIndex);
 
-                // set text
+                // set text, including name, date, etc.
                 binding.fragmentAddEditCardEvent.setText(card.event);
 
                 int intDay = card.date.day;
                 int intMonth = card.date.month;
                 int intYear = card.date.year;
 
+                // if there is no day or month, show a blank
                 binding.fragmentAddEditCardDay.setText(intDay != -1 ? String.valueOf(intDay) : "");
                 binding.fragmentAddEditCardMonth.setText(intMonth != -1 ? String.valueOf(intMonth) : "");
                 binding.fragmentAddEditCardYear.setText(intYear != -1 ? String.valueOf(intYear) : "");
@@ -198,7 +213,7 @@ public class AddEditCardFragment extends Fragment {
                         String.join(" ", card.tags)
                 );
 
-                // done button
+                // done button onclick functionality
                 binding.fragmentAddEditCardDone.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -211,6 +226,7 @@ public class AddEditCardFragment extends Fragment {
                             ).show(); // immediately show
                             return; // break out
                         }
+                        // otherwise, edit the card!
                         Card newCard;
                         try {
                             newCard = getCardFromInputs(); // abstracted away so that add can also use it
@@ -225,7 +241,7 @@ public class AddEditCardFragment extends Fragment {
                         }
                         // delete old
                         cardDirectOwner.cards.remove(card);
-                        // add to new
+                        // add new to the correct deck
                         flattenedList.get(checkedIndex).cards.add(newCard);
                         // commit
                         writeAndReturnToTimeline();
@@ -236,7 +252,7 @@ public class AddEditCardFragment extends Fragment {
                 //// else, we are bulk editing
                 // set toolbar appropriately
                 ((Toolbar) requireActivity().findViewById(R.id.activity_main_toolbar)).setTitle("Edit Cards: (multiple)");
-                // set radio list to show nothing checked
+                // set radio list to show nothing checked (in reality, multiple are selected)
                 radioListBundle.putInt("checked", -1);
                 this.checkedIndex = -1;
                 // hide event, date, and info
@@ -244,31 +260,38 @@ public class AddEditCardFragment extends Fragment {
                 // then handle tags
                 // show all the tags that all the cards selected have in common
                 Set<String> commonTags = new HashSet<String>();
+                // for every tag the first card has
                 for (String tag : cards.get(0).tags) {
+                    // check every other card
                     for (int cardIndex = 0; cardIndex < cards.size(); cardIndex++) {
+                        // if they ALL contain this tag
                         if (cards.get(cardIndex).tags.contains(tag)) {
                             if (cardIndex == cards.size()-1) {
+                                // then add it to commonTags
                                 commonTags.add(tag);
                             } else {
                                 continue;
                             }
                         } else {
+                            // this tag is not in common across all selected cards
+                            // proceed to next tag contained by the first card
                             break;
                         }
                     }
                 }
+
                 // yes, this is a nested loop, which is inefficient
                 // but on average it should perform ok, as
                 //      1. cards will generally have few tags, making the first loop short, and
                 //      2. the moment a tag is NOT found, we break, making the second loop short
                 // further optimization here is probably not worth the added codebase complexity
 
-                // show it on the ui
+                // show the tags on the ui
                 binding.fragmentAddEditCardTags.setText(
                         String.join(" ", commonTags)
                 );
 
-                // done button
+                // done button onclick functionality
                 binding.fragmentAddEditCardDone.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -322,12 +345,12 @@ public class AddEditCardFragment extends Fragment {
                 }
             });
 
-            // delete onclick
+            // delete button onclick listener
             binding.fragmentAddEditCardDelete.setOnClickListener(new DeleteConfirmation(
                     new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            // remove the cards
+                            // remove the cards that are being edited
                             locateAndDeleteAll(cards, deck);
                             // commit
                             writeAndReturnToTimeline();
@@ -338,14 +361,21 @@ public class AddEditCardFragment extends Fragment {
 
             // code here will execute for edit (both cases)
 
+            //
+
         }
 
         // code here will execute for all three
 
-    }
+        //
 
+    } // end of onViewCreated
+
+    // grab the inputs
+    // parse it and make sure its valid: validate it
     private Card getCardFromInputs() throws NumberFormatException {
-        // get dates
+
+        // prepare date variables
         int day;
         int month;
         int year;
@@ -414,18 +444,22 @@ public class AddEditCardFragment extends Fragment {
         Set<String> tags = new HashSet<String>();
         Collections.addAll(tags, stringArrayTags);
         // make it into a new card and add it to the cards of the deck currently opened
+        // voila! a new card
         return new Card(event, date, info, tags);
     }
 
+    // commit method: writes to file and returns
+    // this is used multiple times and is thus abstracted away
     private void writeAndReturnToTimeline() {
         // write to file
         masterDeckManager.writeSingleObjectToFile(masterDeck);
         // navigate back to the timeline
         NavHostFragment.findNavController(AddEditCardFragment.this).navigate(
-                AddEditCardFragmentDirections.actionAddEditCardFragmentToTimelineFragment(deckIndex, parentIndex, true, "", 0)
+                AddEditCardFragmentDirections.actionAddEditCardFragmentToTimelineFragment(deckIndex, parentIndex, true, "", 0, 0, 0)
         );
     }
 
+    // search through all cards and untether all the cards from their decks
     private void locateAndDeleteAll(List<Card> cards, Deck deck) {
         for (Card card : cards) {
             Deck cardDirectOwner = deck.getDeckContainingCard(card);

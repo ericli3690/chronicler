@@ -19,9 +19,7 @@ import com.example.chronicler.R;
 import com.example.chronicler.adapters.ChronologicalTimelineRecyclerViewAdapter;
 import com.example.chronicler.adapters.FullTimelineRecyclerViewAdapter;
 import com.example.chronicler.adapters.PartialTimelineRecyclerViewAdapter;
-import com.example.chronicler.adapters.TimelineRecyclerViewAdapter;
 import com.example.chronicler.databinding.FragmentTimelineBinding;
-import com.example.chronicler.datatypes.Card;
 import com.example.chronicler.datatypes.CardChronologicalList;
 import com.example.chronicler.datatypes.Deck;
 import com.example.chronicler.datatypes.SettingsFile;
@@ -29,18 +27,29 @@ import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
+// the timeline screen
+// there are two ways it can show up
+// 1. the user presses view timeline from the deck screen
+// 2. the user presses view timeline during a game
+// in the former case editing of cards needs to be allowed
+// in the latter case some cards need to be hidden and some information from the game stored for later use
 public class TimelineFragment extends Fragment {
 
+    // ui control
     private FragmentTimelineBinding binding;
+    // information about deck
     private int deckIndex;
     private int parentIndex;
+    // information about any ongoing games
     private String gameOrderString;
     private int currentObscured;
     private boolean allowEdit;
+    private int streak;
+    private int score;
 
+    // android-required method
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // handle binding
@@ -48,6 +57,7 @@ public class TimelineFragment extends Fragment {
         return binding.getRoot();
     }
 
+    // main:
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -58,6 +68,8 @@ public class TimelineFragment extends Fragment {
         this.allowEdit = TimelineFragmentArgs.fromBundle(getArguments()).getAllowEdit();
         this.gameOrderString = TimelineFragmentArgs.fromBundle(getArguments()).getGameOrderString();
         this.currentObscured = TimelineFragmentArgs.fromBundle(getArguments()).getCurrentObscured();
+        this.score = TimelineFragmentArgs.fromBundle(getArguments()).getScore();
+        this.streak = TimelineFragmentArgs.fromBundle(getArguments()).getStreak();
         // grab data
         SettingsFile settingsFile = ((MainActivity) requireActivity()).settingsFile;
         Deck masterDeck = ((MainActivity) requireActivity()).masterDeck;
@@ -75,7 +87,7 @@ public class TimelineFragment extends Fragment {
             binding.fragmentTimelineEdit.setVisibility(View.GONE);
         }
 
-        // back button
+        // back button functionality, figuring out which page to go back to and which arguments to communicate
         requireActivity().getOnBackPressedDispatcher().addCallback(requireActivity(), new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
@@ -85,20 +97,21 @@ public class TimelineFragment extends Fragment {
                     );
                 } else {
                     NavHostFragment.findNavController(TimelineFragment.this).navigate(
-                            TimelineFragmentDirections.actionTimelineFragmentToGameFragment(deckIndex, parentIndex, gameOrderString, currentObscured)
+                            TimelineFragmentDirections.actionTimelineFragmentToGameFragment(deckIndex, parentIndex, gameOrderString, currentObscured, score, streak)
                     );
                 }
-                this.setEnabled(false);
+                this.setEnabled(false); // disable this back function so the next one can take over
             }
         });
 
-        // get recyclerview
+        // get recyclerview for list
         RecyclerView cardRv = binding.fragmentTimelineRv;
         // set layout
         cardRv.setLayoutManager(new LinearLayoutManager(requireContext()));
         ChronologicalTimelineRecyclerViewAdapter adapter;
         // set adapter
         CardChronologicalList chronologicalList = deck.getAllCards().getChronologicalList();
+        // handle whether editing is allowed, which adapter to use
         if (allowEdit) {
             adapter = new FullTimelineRecyclerViewAdapter(
                     chronologicalList, requireContext(), settingsFile
@@ -109,9 +122,10 @@ public class TimelineFragment extends Fragment {
             );
         }
 
-        cardRv.setAdapter(adapter);
+        cardRv.setAdapter(adapter); // activate!
 
-        // other buttons
+        //// other buttons
+        // search
         binding.fragmentTimelineSearchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -121,16 +135,18 @@ public class TimelineFragment extends Fragment {
                 adapter.hideAllWithoutSearchTerm(searchTerm);
             }
         });
+        // edit
         binding.fragmentTimelineEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // get all that are selected
+                // first, a check
                 if (gameOrderString.length() > 0) {
                     return;
                 }
                 // we can now be sure we are in full mode
                 // ie this is not accessed from the game
                 // and there are checkboxes visible
+                // get all that are selected
                 List<Integer> checkedCardIndices = adapter.checkedCardIndices;
                 // check that at least one is selected
                 if (checkedCardIndices.size() == 0) {

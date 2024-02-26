@@ -102,6 +102,12 @@
         <argument
             android:name="currentObscured"
             app:argType="integer" />
+        <argument
+            android:name="score"
+            app:argType="integer" />
+        <argument
+            android:name="streak"
+            app:argType="integer" />
     </fragment>
     <fragment
         android:id="@+id/addEditCardFragment"
@@ -146,6 +152,12 @@
             app:argType="string" />
         <argument
             android:name="currentObscured"
+            app:argType="integer" />
+        <argument
+            android:name="score"
+            app:argType="integer" />
+        <argument
+            android:name="streak"
             app:argType="integer" />
     </fragment>
     <fragment

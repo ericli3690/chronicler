@@ -11,15 +11,18 @@ import com.example.chronicler.datatypes.CardChronologicalList;
 import com.example.chronicler.datatypes.SettingsFile;
 
 import java.util.ArrayList;
-import java.util.List;
 
+// main timeline adapter, is chronological
+// shows up in the timeline screen
 public class FullTimelineRecyclerViewAdapter extends ChronologicalTimelineRecyclerViewAdapter {
 
+    // quick constructor that relies on super
     public FullTimelineRecyclerViewAdapter(CardChronologicalList chronologicalCards, Context context, SettingsFile settingsFile) {
         super(chronologicalCards, context, settingsFile);
         this.checkedCardIndices = new ArrayList<Integer>();
     }
 
+    // main:
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder viewHolder, int position) {
         super.onBindViewHolder(viewHolder, position);
@@ -37,7 +40,7 @@ public class FullTimelineRecyclerViewAdapter extends ChronologicalTimelineRecycl
                 this.checkedCardIndices.contains(cardIndexInChronologicalList)
         );
 
-        // handle listener
+        // handle listener for when a card is selected
         viewHolder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {

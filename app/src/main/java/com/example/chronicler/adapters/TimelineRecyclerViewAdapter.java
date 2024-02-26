@@ -27,6 +27,8 @@ import com.example.chronicler.datatypes.CardHeap;
 import java.util.ArrayList;
 import java.util.List;
 
+// base abstract class for all lists that display cards
+// this abstract class is mainly to keep viewholder stuff all together
 public abstract class TimelineRecyclerViewAdapter extends RecyclerView.Adapter<TimelineRecyclerViewAdapter.ViewHolder> {
 
     // there are three different ways this class can be used
@@ -60,26 +62,30 @@ public abstract class TimelineRecyclerViewAdapter extends RecyclerView.Adapter<T
     //
 
     // instance vars
+    // ui control
     private SubCardRowBinding binding;
+    // which card are flipped
     protected List<Card> flippedCards; // not chronological
+    // some background info for android
     protected Context context;
 
-    // empty dummy constructor
-    // after all, this abstract class is mainly to keep viewholder stuff all together
+    // simple constructor
     public TimelineRecyclerViewAdapter(Context context) {
         // flips
         this.flippedCards = new ArrayList<Card>();
         this.context = context;
     }
 
+    // when a new card comes into view on the ui
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // inflate binding and link to viewholder
+        // inflate binding and link to viewholder; show it
         binding = SubCardRowBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
         return new ViewHolder(binding);
     }
 
+    // define what each card looks like
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public final ConstraintLayout root;
         public final RelativeLayout background;

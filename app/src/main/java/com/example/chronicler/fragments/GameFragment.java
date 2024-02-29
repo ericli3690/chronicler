@@ -162,7 +162,7 @@ public class GameFragment extends Fragment {
             // turn it into percent (ex. 0.66) then multiply by amount of cards
             float unroundedDifficulty = ((float) chronologicalList.size()) * fixedPercentDifficulty / 100.0f;
             // round it down: now difficulty stores an integer equal to approximately [percentDifficulty] of the cards
-            int difficulty = (int) Math.floor(unroundedDifficulty);
+            int difficulty = Math.max(1, (int) Math.floor(unroundedDifficulty));
             // prepare output order of cards
             gameOrder = new ArrayList<Card>();
             // generate a random number from 0 to # of cards

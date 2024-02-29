@@ -125,17 +125,12 @@ public class CardDate {
         if (day < 1) {
             return true;
         }
-
         //// but is the day too high?
-
         // first, is it a leap year day
-
         if (month == 2 && day == 29) {
-
             // calculate leap year
             // there are far more succinct ways of writing this
             // but i believe this shows my thinking thinking most clearly
-
             if (year % 4 == 0) {
                 // divisible by 4: its a leap year!
                 // unless... its divisble by 100?
@@ -158,17 +153,13 @@ public class CardDate {
                 return true; // there is an error
             }
         }
-
         // otherwise
-
         if (day > monthLengths[month-1]) {
             // too high
             return true;
         }
-
         // got all the way to the end!
         // no problems here
         return false;
-
     }
 }

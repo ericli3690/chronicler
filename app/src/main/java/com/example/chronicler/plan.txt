@@ -1,26 +1,11 @@
-CURRERNT
-
-- find everything that goes in criterion c
-- create UML
-- create pseudocode?
-- do final run of criterion a and b
-- finish criterion c
-- update appendix a
-- finish criterion e
-- review criterion requirements, exemplars, and final to do in notion
-- trim to word count
-
-- do criterion d
-- bundle everything together
-- submit
-
-DELEGATED
+TODO
 - import menu
     - preinstalled decks
     - api fetching
     - open files
-        - make sure this handles dates in the future with an error
 - export files
+- select all cards
+- remove future dates error
 
 NOTES
 - if a safeargs error happens again:

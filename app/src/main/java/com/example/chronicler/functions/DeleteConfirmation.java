@@ -14,19 +14,15 @@ public class DeleteConfirmation implements View.OnClickListener {
 
     // wraps around the method that runs after confirm is pressed
     View.OnClickListener andThen;
-    // requires some information about the context
     Context context;
 
-    // quick and easy constructor
     public DeleteConfirmation(View.OnClickListener andThen, Context context) {
         this.andThen = andThen;
         this.context = context;
     }
 
-    // the delete button was pressed...
     @Override
     public void onClick(View view) {
-        // double check with confirmation message
         Snackbar deleteConfirmation = Snackbar.make(
                 view,
                 "Are you sure?",

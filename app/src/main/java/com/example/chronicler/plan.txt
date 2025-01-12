@@ -13,4 +13,3 @@ NOTES
     - rebuild
     - reconnect all actions in the navgraph visual ui
     - rebuild
-- filemanager writing an array has never been tested

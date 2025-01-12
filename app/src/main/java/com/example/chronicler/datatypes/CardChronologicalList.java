@@ -4,12 +4,12 @@ import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 
-// a custom chronologicallist class
+// a custom chronological list class
 // more efficient than java's arraylist at .indexOf(), .remove(), and .contains()
 public class CardChronologicalList extends ArrayList<Card> {
 
     // CardHeap.getChronologicalList() returns one of these
-    // .indexOf(), .remove(), and .contains() are overriden to be more efficient
+    // .indexOf(), .remove(), and .contains() are overridden to be more efficient
     // so that they use a binary search algorithm instead
     // allows the element to be indexed, removed, or determined if it is contained
     // in O(logn) time instead of O(n) time
@@ -24,13 +24,12 @@ public class CardChronologicalList extends ArrayList<Card> {
     // thus it should do BOTH, and return whichever has a valid answer, and -1 if neither do
     // there should be no scenario where both return valid answers, as all cards are unique
     // in practice these double splits should be rare, as few cards in a deck will have many cards on the same date
-    // so the time complexity will not be affected greately
+    // so the time complexity will not be affected greatly
     // in the worst case, if all the cards in a deck are on the same day,
     // then binarySearch() will act like a linear search, running once per element in the list
     // and each time, eliminating one card as a possibility for a match
     // this reverts the time complexity to O(n) -- but again, will be rare
 
-    // constructor
     public CardChronologicalList() {
         super();
     }
@@ -40,29 +39,23 @@ public class CardChronologicalList extends ArrayList<Card> {
         super(cardChronologicalList);
     }
 
-    // main recursive function
     private int binarySearch(Card card, int first, int last) {
         if (last < first) {
-            // this is the failure base case
+            // this is the failure case
             return -1;
         }
-        // otherwise get the middle and continue
         int middle = first + (last-first)/2; // integer division ensures this is a floored int
         if (get(middle) == card) {
-            // this is the success base case
-            // match found, return and break out
             return middle;
         }
-        // now do the recursive step
+
         int isCardLaterThanMiddle = card.date.isLaterThan(
                 get(middle).date
         );
-        // check it
+
         if (isCardLaterThanMiddle > 0) {
-            // this means yes: do after middle
             return binarySearch(card, middle+1, last);
         } else if (isCardLaterThanMiddle < 0) {
-            // this means no: do before middle
             return binarySearch(card, first, middle-1);
         } else {
             // this means they are equal
@@ -73,7 +66,6 @@ public class CardChronologicalList extends ArrayList<Card> {
             if (leftResult != -1) {
                 return leftResult;
             }
-            // then try right
             int rightResult = binarySearch(card, middle+1, last);
             if (rightResult != -1) {
                 return rightResult;
@@ -87,7 +79,6 @@ public class CardChronologicalList extends ArrayList<Card> {
 
     @Override
     public int indexOf(@Nullable Object card) {
-        // search and return the entire list
         return binarySearch((Card) card, 0, size()-1);
     }
 
@@ -95,7 +86,7 @@ public class CardChronologicalList extends ArrayList<Card> {
     public boolean remove(@Nullable Object card) {
         int indexToRemove = binarySearch((Card) card, 0, size()-1);
         if (indexToRemove == -1) {
-            // remove fails
+            // fails
             return false;
         } else {
             super.remove(indexToRemove);
@@ -105,8 +96,6 @@ public class CardChronologicalList extends ArrayList<Card> {
 
     @Override
     public boolean contains(@Nullable Object card) {
-        // simple oneliner
-        // if search fails, return false; if search succeeds, return true
         return binarySearch((Card) card, 0, size() - 1) != -1;
     }
 }

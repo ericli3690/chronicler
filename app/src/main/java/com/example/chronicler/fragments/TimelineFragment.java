@@ -37,7 +37,6 @@ import java.util.List;
 // in the latter case some cards need to be hidden and some information from the game stored for later use
 public class TimelineFragment extends Fragment {
 
-    // ui control
     private FragmentTimelineBinding binding;
     // information about deck
     private int deckIndex;
@@ -49,7 +48,6 @@ public class TimelineFragment extends Fragment {
     private int streak;
     private int score;
 
-    // android-required method
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // handle binding
@@ -57,7 +55,6 @@ public class TimelineFragment extends Fragment {
         return binding.getRoot();
     }
 
-    // main:
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -74,15 +71,11 @@ public class TimelineFragment extends Fragment {
         SettingsFile settingsFile = ((MainActivity) requireActivity()).settingsFile;
         Deck masterDeck = ((MainActivity) requireActivity()).masterDeck;
 
-        //// get deck name
-        // get deck
         Deck deck = masterDeck.getFlattenedList().get(this.deckIndex);
-        // set toolbar
         ((Toolbar) requireActivity().findViewById(R.id.activity_main_toolbar)).setTitle(
                 "Timeline: " + deck.name
         );
 
-        // if edit is prohibited, hide the edit button
         if (!allowEdit) {
             binding.fragmentTimelineEdit.setVisibility(View.GONE);
         }
@@ -104,12 +97,9 @@ public class TimelineFragment extends Fragment {
             }
         });
 
-        // get recyclerview for list
         RecyclerView cardRv = binding.fragmentTimelineRv;
-        // set layout
         cardRv.setLayoutManager(new LinearLayoutManager(requireContext()));
         ChronologicalTimelineRecyclerViewAdapter adapter;
-        // set adapter
         CardChronologicalList chronologicalList = deck.getAllCards().getChronologicalList();
         // handle whether editing is allowed, which adapter to use
         if (allowEdit) {
@@ -122,16 +112,13 @@ public class TimelineFragment extends Fragment {
             );
         }
 
-        cardRv.setAdapter(adapter); // activate!
+        cardRv.setAdapter(adapter);
 
-        //// other buttons
         // search
         binding.fragmentTimelineSearchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // get search term
                 String searchTerm = binding.fragmentTimelineSearchBar.getText().toString();
-                // only show those that contain it
                 adapter.hideAllWithoutSearchTerm(searchTerm);
             }
         });
@@ -139,7 +126,6 @@ public class TimelineFragment extends Fragment {
         binding.fragmentTimelineEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // first, a check
                 if (gameOrderString.length() > 0) {
                     return;
                 }
@@ -148,17 +134,14 @@ public class TimelineFragment extends Fragment {
                 // and there are checkboxes visible
                 // get all that are selected
                 List<Integer> checkedCardIndices = adapter.checkedCardIndices;
-                // check that at least one is selected
                 if (checkedCardIndices.size() == 0) {
-                    // none were selected
-                    Snackbar.make( // show error message
+                    Snackbar.make(
                             requireActivity().findViewById(android.R.id.content), // get root
                             "You have not selected any cards.",
                             BaseTransientBottomBar.LENGTH_SHORT
-                    ).show(); // immediately show
-                    return; // do not proceed
+                    ).show();
+                    return;
                 }
-                // else were are confident that there is at least one index selected
                 // package the indices up as a string
                 List<String> indicesStringList = new ArrayList<String>();
                 for (Integer cardIndex : checkedCardIndices) {

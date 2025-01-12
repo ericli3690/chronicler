@@ -39,9 +39,7 @@ import java.util.Set;
 // can also allow the user to edit multiple cards at once: bulk edit
 public class AddEditCardFragment extends Fragment {
 
-    // ui control
     private FragmentAddEditCardBinding binding;
-    // which deck does this belong to?
     private int deckIndex;
     private int parentIndex;
     // which cards are we editing
@@ -52,7 +50,6 @@ public class AddEditCardFragment extends Fragment {
     private Deck masterDeck;
     private FileManager<Deck> masterDeckManager;
 
-    // android-required ui initialization method
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // handle binding
@@ -60,7 +57,6 @@ public class AddEditCardFragment extends Fragment {
         return binding.getRoot();
     }
 
-    // main:
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -90,7 +86,6 @@ public class AddEditCardFragment extends Fragment {
 
         //// if is add card
         if (cardIndices.length() == 0) {
-            // set toolbar as such
             ((Toolbar) requireActivity().findViewById(R.id.activity_main_toolbar)).setTitle("Add Card");
 
             // back button functionality: will need to return to deck fragment
@@ -103,32 +98,27 @@ public class AddEditCardFragment extends Fragment {
                     this.setEnabled(false); // disable this back function so the next one can take over
                 }
             });
-            // hide delete button
+            // hide delete button and radiolist
             binding.fragmentAddEditCardDelete.setVisibility(View.GONE);
-
-            // no need to worry about the radiolist, hide it
             binding.fragmentAddEditCardLinearEdit.setVisibility(View.GONE);
 
             // done button onclick
             binding.fragmentAddEditCardDone.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    // try to create a new card
                     Card newCard;
                     try {
                         newCard = getCardFromInputs(); // abstracted away so that edit (single) can also use it
                     } catch (NumberFormatException e) {
-                        // the date was entered incorrectly
                         Snackbar.make(
                                 requireActivity().findViewById(android.R.id.content), // get root
                                 "The dates entered are invalid.",
                                 BaseTransientBottomBar.LENGTH_SHORT
-                        ).show(); // immediately show
-                        return; // break out
+                        ).show();
+                        return;
                     }
                     // otherwise, successful! add the card
                     deck.cards.add(newCard);
-                    // write to file
                     masterDeckManager.writeSingleObjectToFile(masterDeck);
                     // clear all textviews
                     // this allows the user to add another card instantly if they so choose
@@ -138,12 +128,12 @@ public class AddEditCardFragment extends Fragment {
                     binding.fragmentAddEditCardYear.setText("");
                     binding.fragmentAddEditCardInfo.setText("");
                     binding.fragmentAddEditCardTags.setText("");
-                    // send success message
+
                     Snackbar.make(
                             requireActivity().findViewById(android.R.id.content), // get root
                             "Card created!",
                             BaseTransientBottomBar.LENGTH_SHORT
-                    ).show(); // immediately show
+                    ).show();
                 }
             });
 
@@ -223,21 +213,20 @@ public class AddEditCardFragment extends Fragment {
                                     requireActivity().findViewById(android.R.id.content), // get root
                                     "Cards must have a parent deck.",
                                     BaseTransientBottomBar.LENGTH_SHORT
-                            ).show(); // immediately show
-                            return; // break out
+                            ).show();
+                            return;
                         }
                         // otherwise, edit the card!
                         Card newCard;
                         try {
                             newCard = getCardFromInputs(); // abstracted away so that add can also use it
                         } catch (NumberFormatException e) {
-                            // the date was entered incorrectly
                             Snackbar.make(
                                     requireActivity().findViewById(android.R.id.content), // get root
                                     "The date entered is invalid.",
                                     BaseTransientBottomBar.LENGTH_SHORT
-                            ).show(); // immediately show
-                            return; // break out
+                            ).show();
+                            return;
                         }
                         // delete old
                         cardDirectOwner.cards.remove(card);
@@ -250,14 +239,12 @@ public class AddEditCardFragment extends Fragment {
 
             } else {
                 //// else, we are bulk editing
-                // set toolbar appropriately
                 ((Toolbar) requireActivity().findViewById(R.id.activity_main_toolbar)).setTitle("Edit Cards: (multiple)");
                 // set radio list to show nothing checked (in reality, multiple are selected)
                 radioListBundle.putInt("checked", -1);
                 this.checkedIndex = -1;
                 // hide event, date, and info
                 binding.fragmentAddEditCardLinearAdd.setVisibility(View.GONE);
-                // then handle tags
                 // show all the tags that all the cards selected have in common
                 Set<String> commonTags = new HashSet<String>();
                 // for every tag the first card has
@@ -280,7 +267,7 @@ public class AddEditCardFragment extends Fragment {
                     }
                 }
 
-                // yes, this is a nested loop, which is inefficient
+                // yes, the above is a nested loop, which is inefficient
                 // but on average it should perform ok, as
                 //      1. cards will generally have few tags, making the first loop short, and
                 //      2. the moment a tag is NOT found, we break, making the second loop short
@@ -301,26 +288,22 @@ public class AddEditCardFragment extends Fragment {
                                     requireActivity().findViewById(android.R.id.content), // get root
                                     "Cards must have a parent deck.",
                                     BaseTransientBottomBar.LENGTH_SHORT
-                            ).show(); // immediately show
-                            return; // break out
+                            ).show();
+                            return;
                         }
                         // get tags
                         String[] stringArrayTags = binding.fragmentAddEditCardTags.getText().toString().split(" ");
-                        // put tags into a hashset
                         Set<String> potentiallyNewTags = new HashSet<String>();
                         Collections.addAll(potentiallyNewTags, stringArrayTags);
                         for (Card card : cards) {
-                            // add them all; this will eliminate duplicates automatically due to card.tags being a set datastructure
+                            // add them all; this will eliminate duplicates automatically due to card.tags being a set data structure
                             card.tags.addAll(potentiallyNewTags);
                         }
                         if (checkedIndex == -1) {
                             // the user did not edit the parent deck
-                            // we are done
                         } else {
                             // the user edited the parent deck
-                            // delete all cards from their existing deck
                             locateAndDeleteAll(cards, deck);
-                            // then readd them to the new deck
                             flattenedList.get(checkedIndex).cards.addAll(cards);
                         }
                         // commit
@@ -329,6 +312,7 @@ public class AddEditCardFragment extends Fragment {
                 });
 
             }
+
             // setup radio list
             // activate the subfragment
             requireActivity().getSupportFragmentManager().beginTransaction()
@@ -350,9 +334,7 @@ public class AddEditCardFragment extends Fragment {
                     new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            // remove the cards that are being edited
                             locateAndDeleteAll(cards, deck);
-                            // commit
                             writeAndReturnToTimeline();
                         }
                     },
@@ -375,12 +357,10 @@ public class AddEditCardFragment extends Fragment {
     // parse it and make sure its valid: validate it
     private Card getCardFromInputs() throws NumberFormatException {
 
-        // prepare date variables
         int day;
         int month;
         int year;
 
-        // get strings
         String stringDay = binding.fragmentAddEditCardDay.getText().toString();
         String stringMonth = binding.fragmentAddEditCardMonth.getText().toString();
         String stringYear = binding.fragmentAddEditCardYear.getText().toString();
@@ -444,14 +424,12 @@ public class AddEditCardFragment extends Fragment {
         Set<String> tags = new HashSet<String>();
         Collections.addAll(tags, stringArrayTags);
         // make it into a new card and add it to the cards of the deck currently opened
-        // voila! a new card
         return new Card(event, date, info, tags);
     }
 
     // commit method: writes to file and returns
     // this is used multiple times and is thus abstracted away
     private void writeAndReturnToTimeline() {
-        // write to file
         masterDeckManager.writeSingleObjectToFile(masterDeck);
         // navigate back to the timeline
         NavHostFragment.findNavController(AddEditCardFragment.this).navigate(

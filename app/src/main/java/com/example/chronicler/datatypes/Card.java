@@ -4,7 +4,6 @@ import java.util.Set;
 
 // card data type
 public class Card {
-    // instance vars
     public String event;
     public CardDate date;
     public String info;

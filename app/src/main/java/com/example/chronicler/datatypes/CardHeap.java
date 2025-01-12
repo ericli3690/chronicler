@@ -19,11 +19,13 @@ public class CardHeap extends ArrayList<Card> {
     // this class will also break with the conventional use of "this" that i maintain in most other classes
     // this is because the use of "this" in this class will make the code hard to read and bloated
 
+    // in the future this could be improved to a black-red or avl tree
+    // to prevent degenerate trees
+
     // sources used:
     // https://www.geeksforgeeks.org/introduction-to-heap-data-structure-and-algorithm-tutorials/
     // https://www.programiz.com/dsa/heap-data-structure
 
-    // constructor
     public CardHeap() {
         super();
     }
@@ -36,7 +38,6 @@ public class CardHeap extends ArrayList<Card> {
     // alternative constructor for putting multiple cardheaps together into a single cardheap
     public CardHeap(List<CardHeap> subHeaps) {
         super();
-        // put them into a single buffer list
         List<Card> cardsInList = new ArrayList<Card>();
         for (CardHeap subHeap : subHeaps) {
             cardsInList.addAll(subHeap);
@@ -57,54 +58,47 @@ public class CardHeap extends ArrayList<Card> {
         return (childIndex - 1)/2; // integer rounding will floor the result
     }
 
-    // swaps two indices
     private void swap(int index1, int index2) {
         Card temp = get(index1);
         set(index1, get(index2));
         set(index2, temp);
     }
 
-    // move a card upward until it is in the right place
     private void siftUp(int index) {
-        // has a time complexity of O(logn)
+        // O(logn)
 
         if (index == 0) {
-            // base case
             // this is the root
             return;
         } // else we may be sure that the parent exists
 
-        // get cards
         Card childCard = get(index);
         int parentIndex = getParentIndex(index);
         Card parentCard = get(parentIndex);
 
-        // compare child with parent
         if (childCard.date.isLaterThan(parentCard.date) == -1) {
             // a return value of -1 means "no": the childCard is NOT later than the parentCard
             // ie, something is wrong, the minheap property is not preserved
-            // we must swap parent and child
             swap(index, parentIndex);
-            // then recur upwards
+            // recur upwards
             siftUp(parentIndex);
-        } // if this while loop is NOT the case, then we are done; do nothing
+        }
     }
 
     // move a card downward until it is in the right place
     private void siftDown(int index) {
-        // has a time complexity of O(logn)
+        // O(logn)
 
         // temporarily state this index as the earliest one we have found thus far
         int earliestIndex = index;
-        // compare to left
+        // compare
         int leftIndex = getLeftChildIndex(index);
-        if (leftIndex < size()) { // this is a valid index
+        if (leftIndex < size()) {
             Card leftCard = get(leftIndex);
             int doesLeftSideNeedSwap = get(earliestIndex).date.isLaterThan(leftCard.date);
             if (doesLeftSideNeedSwap == 1) {
                 // a return value of 1 means "yes": the parent card IS later than the left card
                 // ie, something is wrong, the minheap property is not preserved
-                // we may need to swap the parent and left
                 earliestIndex = leftIndex;
             } else if (doesLeftSideNeedSwap == 0) {
                 // they are the same year at the very least
@@ -124,36 +118,30 @@ public class CardHeap extends ArrayList<Card> {
                 //  y       y
 
                 if (get(earliestIndex).date.month == -1 && leftCard.date.month != -1) {
-                    // it has a month while we dont, swap
                     earliestIndex = leftIndex;
                 } else if (get(earliestIndex).date.day == -1 && leftCard.date.day != -1) {
-                    // it has a day while we dont, swap
                     earliestIndex = leftIndex;
                 }
             }
         }
-        // unless right is EVEN earlier...
-        // compare to right
+
         int rightIndex = getRightChildIndex(index);
         if (rightIndex < size()) {
             Card rightCard = get(rightIndex);
             int doesRightNeedSwap = get(earliestIndex).date.isLaterThan(rightCard.date);
             if (doesRightNeedSwap == 1) {
-                // by similar logic to that stated above:
                 earliestIndex = rightIndex;
             } else if (doesRightNeedSwap == 0) {
                 if (get(earliestIndex).date.month == -1 && rightCard.date.month != -1) {
-                    // it has a month while we dont, swap
                     earliestIndex = rightIndex;
                 } else if (get(earliestIndex).date.day == -1 && rightCard.date.day != -1) {
-                    // it has a day while we dont, swap
                     earliestIndex = rightIndex;
                 }
             }
         }
-        // if earliestIndex is still equal to index, then this card is fine where it is
+
         if (earliestIndex == index) {
-            return;
+            return; // this card is fine where it is
         }
         // else, swap and recur downwards
         swap(index, earliestIndex);
@@ -161,23 +149,18 @@ public class CardHeap extends ArrayList<Card> {
     }
 
     private void buildHeap() {
-        // start from the end and go to the beginning
-        // has a time complexity of O(n)
-        // despite seeming like it should be O(nlogn) (n elements, each being inserted and costing logn time), thanks to cool math
-        // source: https://www.geeksforgeeks.org/time-complexity-of-building-a-heap/
+        // O(n)
         for (int siftIndex = size()-1; siftIndex >= 0; siftIndex--) {
             siftDown(siftIndex);
         }
     }
 
-    // get the top element and remove it
-    // need to rebalance too
     private Card popRoot() {
-        Card toReturn = get(0); // read root
-        set(0, get(size()-1)); // overwrite root
-        remove(size()-1); // remove last leaf, which was copied to root
-        if (size() > 0) { // if theres still a tree to rebalance
-            siftDown(0); // rebalance the tree
+        Card toReturn = get(0);
+        set(0, get(size()-1));
+        remove(size()-1);
+        if (size() > 0) {
+            siftDown(0);
         }
 
         // test code to print out heap as it is popped
@@ -196,23 +179,22 @@ public class CardHeap extends ArrayList<Card> {
 //        }
 //        Log.d("B", output.toString());
 
-        return toReturn; // return popped value
+        return toReturn;
     }
 
     // override add so that it when cards are added it is done in a heap way
     @Override
     public boolean add(Card card) {
-        super.add(card); // add at end
-        siftUp(size()-1); // put it in its proper place
+        super.add(card);
+        siftUp(size()-1);
         return true; // overridden method always returns true
     }
 
-    // override addall
-    // similar to above: make sure that adding is done in a heap way
+    // similar to above
     @Override
     public boolean addAll(@NonNull Collection<? extends Card> cards) {
-        super.addAll(cards); // add all at end
-        buildHeap(); // rebalance
+        super.addAll(cards);
+        buildHeap();
         return true; // overridden method always returns true
     }
 
@@ -222,11 +204,11 @@ public class CardHeap extends ArrayList<Card> {
     // for indexOf(), remove(), and contains()
     // runs in O(nlogn), since popRoot is O(logn) and happens n times
     public CardChronologicalList getChronologicalList() {
-        CardChronologicalList toReturn = new CardChronologicalList(); // will create a chronological list
+        CardChronologicalList toReturn = new CardChronologicalList();
         CardHeap temp = new CardHeap(this); // clone so the original is not deleted
-        while (temp.size() > 0) { // while cards remain in it
-            toReturn.add(temp.popRoot()); // pop everything out
+        while (temp.size() > 0) {
+            toReturn.add(temp.popRoot());
         }
-        return toReturn; // return it
+        return toReturn;
     }
 }

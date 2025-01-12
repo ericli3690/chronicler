@@ -21,10 +21,8 @@ import com.example.chronicler.functions.FileManager;
 // the simple screen that shows the settings
 public class SettingsFragment extends Fragment {
 
-    // ui control
     private FragmentSettingsBinding binding;
 
-    // android-required start method
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // handle binding
@@ -32,7 +30,6 @@ public class SettingsFragment extends Fragment {
         return binding.getRoot();
     }
 
-    // main:
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -40,7 +37,6 @@ public class SettingsFragment extends Fragment {
         FileManager<SettingsFile> settingsFileManager = ((MainActivity) requireActivity()).settingsFileManager;
         SettingsFile settingsFile = ((MainActivity) requireActivity()).settingsFile;
 
-        // set toolbar
         ((Toolbar) requireActivity().findViewById(R.id.activity_main_toolbar)).setTitle("Settings");
 
         // back button functionality: return to home
@@ -54,16 +50,12 @@ public class SettingsFragment extends Fragment {
             }
         });
 
-        // set progress on the sliders
         binding.fragmentSettingsSfx.setProgress(settingsFile.volume);
         binding.fragmentSettingsDifficulty.setProgress(settingsFile.percentDifficulty);
 
-        // onclick for the done button
         binding.fragmentSettingsDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // save the new settings
-                // write it to file
                 settingsFile.volume = binding.fragmentSettingsSfx.getProgress();
                 settingsFile.percentDifficulty = binding.fragmentSettingsDifficulty.getProgress();
                 settingsFileManager.writeSingleObjectToFile(settingsFile);

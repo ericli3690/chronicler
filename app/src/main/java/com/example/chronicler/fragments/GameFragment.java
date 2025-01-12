@@ -35,15 +35,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-// game fragment!
+// game fragment
 // the critical center of the entire app
 // this is the purpose of the app: allowing users to play the history trivia game
 // all the deck and card editing powers are in service of this
 public class GameFragment extends Fragment {
 
-    // ui control
     private FragmentGameBinding binding;
-    // informationa bout which deck is being played
+    // information bout which deck is being played
     private int deckIndex;
     private int parentIndex;
     private Deck deck;
@@ -51,10 +50,8 @@ public class GameFragment extends Fragment {
     private String gameOrderString;
     private List<Card> gameOrder;
     private int currentObscured;
-    // useful information and objects being used
     private GameTimelineRecyclerViewAdapter adapter;
     private CardChronologicalList chronologicalList;
-    // important global variables
     private Deck masterDeck;
     private FileManager<Deck> masterDeckManager;
     private SettingsFile settingsFile;
@@ -74,7 +71,6 @@ public class GameFragment extends Fragment {
     // the scoreboard currently being shown
     private int currentlyDisplayedScoreboard;
 
-    // mandatory android startup method for binding
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // handle binding
@@ -82,7 +78,6 @@ public class GameFragment extends Fragment {
         return binding.getRoot();
     }
 
-    // main:
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -102,9 +97,7 @@ public class GameFragment extends Fragment {
         this.deactivateButtons = false;
 
         //// get deck name
-        // get deck
         deck = masterDeck.getFlattenedList().get(this.deckIndex);
-        // set toolbar
         ((Toolbar) requireActivity().findViewById(R.id.activity_main_toolbar)).setTitle(
                 "Game: " + deck.name
         );
@@ -130,7 +123,6 @@ public class GameFragment extends Fragment {
 
             }
             private void goBack() {
-                // return!
                 NavHostFragment.findNavController(GameFragment.this).navigate(
                         GameFragmentDirections.actionGameFragmentToDeckFragment(deckIndex, parentIndex)
                 );
@@ -143,15 +135,13 @@ public class GameFragment extends Fragment {
         // will use just the first two
         // deckFragment guarantees these both exist, or else the GameFragment would not have opened at all
 
-        // get cards from the deck
         // get the chronological list for use in the difficulty algorithm
         CardHeap allCards = deck.getAllCards();
         chronologicalList = allCards.getChronologicalList();
 
         if (gameOrderString.length() == 0) {
             // game order does not exist yet, this is a new game
-            // therefore run...
-            // THE DIFFICULTY ALGORITHM
+            // difficulty algorithm -- excessively commented for readability and understanding
             // create another chronological list for working and whittling down
             CardChronologicalList workingList = new CardChronologicalList(chronologicalList);
             // get difficulty
@@ -204,15 +194,12 @@ public class GameFragment extends Fragment {
                         )
                 );
             }
-            // get the first two so they can be shown
             initialTwo.add(gameOrder.get(currentObscured-1));
             initialTwo.add(gameOrder.get(currentObscured));
         }
-        // get recyclerview for list
+
         RecyclerView cardRv = binding.fragmentGameRv;
-        // set layout to be linear
         cardRv.setLayoutManager(new LinearLayoutManager(requireContext()));
-        // set adapter, show the initial two
         adapter = new GameTimelineRecyclerViewAdapter(
                 initialTwo, requireContext(), settingsFile
         );
@@ -241,7 +228,7 @@ public class GameFragment extends Fragment {
         binding.fragmentGameTimeline.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (deactivateButtons) { // if something is in progress, stop
+                if (deactivateButtons) {
                     return;
                 }
                 // package up game order
@@ -255,7 +242,6 @@ public class GameFragment extends Fragment {
                             )
                     );
                 }
-                // turn it into a string
                 gameOrderString = String.join(" ", gameOrderStringList);
                 // send it to the timeline screen so that the progress of the game is saved
                 NavHostFragment.findNavController(GameFragment.this).navigate(
@@ -264,7 +250,6 @@ public class GameFragment extends Fragment {
             }
         });
 
-        // show high score ui
         Handler scoreboardHandler = new Handler(Looper.getMainLooper());
         currentlyDisplayedScoreboard = 0;
         // will run the following over and over:
@@ -290,9 +275,7 @@ public class GameFragment extends Fragment {
                         binding.fragmentGameScoreboard.setText("Current Score: " + score);
                         binding.fragmentGameScoreboard.setTypeface(null, Typeface.NORMAL);
                 }
-                // increment
                 currentlyDisplayedScoreboard++;
-                // loop back if at end
                 if (currentlyDisplayedScoreboard == 4) {
                     currentlyDisplayedScoreboard = 0;
                 }
@@ -302,52 +285,42 @@ public class GameFragment extends Fragment {
             }
         };
 
-        // start it!
         nextScoreboard.run();
     }
 
     // the user has provided an answer!
     public void goToNextCardInGame(int isBeforeDuringOrAfter) {
-        if (deactivateButtons) { // if something is in progress, stop
+        if (deactivateButtons) {
             return;
         }
-        // show check or x mark! first, though, hide the "vs" icon
         binding.fragmentGameVs.setVisibility(View.GONE);
-        // prep sound
         MediaPlayer player;
         if (adapter.cards.get(1).date.isLaterThan(adapter.cards.get(0).date) == isBeforeDuringOrAfter) {
-            // success: the user answered correctly!
-            binding.fragmentGameCheck.setVisibility(View.VISIBLE); // show check
+            // success: the user answered correctly
+            binding.fragmentGameCheck.setVisibility(View.VISIBLE);
             // stats
             streak++;
             score++;
-            // high streak
             if (streak > deck.highStreak) {
                 deck.highStreak++;
-                // write to file
                 masterDeckManager.writeSingleObjectToFile(masterDeck);
             }
-            // high score
             if (score > deck.highScore) {
                 deck.highScore++;
-                // write to file
                 masterDeckManager.writeSingleObjectToFile(masterDeck);
             }
             // prepare victory sound
             player = MediaPlayer.create(requireContext(), R.raw.correct);
         } else {
-            // failure: the user answered wrong.
-            binding.fragmentGameCross.setVisibility(View.VISIBLE); // show x
+            // failure: the user answered wrong
+            binding.fragmentGameCross.setVisibility(View.VISIBLE);
             // stats
             streak = 0;
-            // prepare buzzer sound
             player = MediaPlayer.create(requireContext(), R.raw.incorrect);
         }
-        // set volume
-        // must do it logarithmically
+        // set volume: must do it logarithmically
         float logVolume = (float) (1 - Math.log(100-settingsFile.volume)/Math.log(100));
         player.setVolume(logVolume, logVolume);
-        // play sound
         player.start();
         // show the obscured card for two seconds, prevent user from doing anything by deactivating buttons
         adapter.obscure = false;
@@ -361,17 +334,13 @@ public class GameFragment extends Fragment {
             public void run() {
                 // try to go to next card
                 currentObscured++;
-                // if too high...
                 if (currentObscured >= gameOrder.size()) {
-                    // we have reached the end of the game
                     Snackbar.make(
                             requireActivity().findViewById(android.R.id.content), // get root
                             "Congratulations! You finished the game! Press back to return to the deck screen.",
                             BaseTransientBottomBar.LENGTH_SHORT
-                    ).show(); // immediately show
+                    ).show();
                 } else {
-                    // going to next card!
-                    // therefore rehide and revert ui, ex. show "vs" icon again
                     adapter.obscure = true;
                     binding.fragmentGameVs.setVisibility(View.VISIBLE);
                     binding.fragmentGameCheck.setVisibility(View.GONE);
@@ -389,9 +358,7 @@ public class GameFragment extends Fragment {
                     // reload ui
                     adapter.notifyItemChanged(0);
                     adapter.notifyItemChanged(1);
-                    // reactivate buttons so the user can use them again
                     deactivateButtons = false;
-                    // play continues!
                 }
             }
         }, 2000); // this all takes two seconds to kick in so that the answer is shown for a little bit

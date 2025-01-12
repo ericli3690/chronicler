@@ -29,7 +29,6 @@ public class DeckFragment extends Fragment {
     private int deckIndex;
     private int parentIndex;
 
-    // android-required initialization method
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -38,7 +37,6 @@ public class DeckFragment extends Fragment {
         return binding.getRoot();
     }
 
-    // main:
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -50,13 +48,10 @@ public class DeckFragment extends Fragment {
         Deck masterDeck = ((MainActivity) requireActivity()).masterDeck;
 
         //// get deck name
-        // get the deck
         Deck deck = masterDeck.getFlattenedList().get(this.deckIndex);
-        // set toolbar
         ((Toolbar) requireActivity().findViewById(R.id.activity_main_toolbar)).setTitle(
                 "Deck: " + deck.name
         );
-        // set name
         binding.fragmentDeckName.setText(deck.name);
 
         //// onclicks
@@ -70,7 +65,6 @@ public class DeckFragment extends Fragment {
                 this.setEnabled(false); // disable this back function so the next one can take over
             }
         });
-        // all other buttons
         // edit this deck
         binding.fragmentDeckEdit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -105,13 +99,10 @@ public class DeckFragment extends Fragment {
             public void onClick(View view) {
                 // dont allow if there arent enough cards
                 if (deck.getAllCards().size() > 1) {
-                    // start the game!
                     NavHostFragment.findNavController(DeckFragment.this).navigate(
                             DeckFragmentDirections.actionDeckFragmentToGameFragment(deckIndex, parentIndex, "", 0, 0, 0)
                     );
                 } else {
-                    // there is only one card or no cards
-                    // you cant play the game, log an error
                     Snackbar.make(
                             requireActivity().findViewById(android.R.id.content), // get root
                             "This deck doesn't have enough cards to play the game. Add more!",

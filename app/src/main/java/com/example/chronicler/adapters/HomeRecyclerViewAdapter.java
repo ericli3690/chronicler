@@ -24,43 +24,31 @@ import java.util.List;
 // home screen of the app, first opened after passing through mainactivity
 public class HomeRecyclerViewAdapter extends RecyclerView.Adapter<HomeRecyclerViewAdapter.ViewHolder> {
 
-    // instance vars
-    // ui controls
     private SubDeckRowBinding binding;
     private final Deck rootDeck;
-    // then some background info
     private final Deck masterDeck;
     private final Context context;
     private final Activity activity;
     private final HomeFragment fragment;
 
-    // constructor
     public HomeRecyclerViewAdapter(Deck rootDeck, Deck masterDeck, Context context, Activity activity, HomeFragment fragment) {
-        // vital information about contents
         this.rootDeck = rootDeck;
         this.masterDeck = masterDeck;
-        // important enclosing information
         this.context = context;
         this.activity = activity;
         this.fragment = fragment;
     }
 
-    // inflate and set onclicks
-    // mandatory android-required ui initialization method
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // inflate the binding and link it to a viewholder
+        // handle binding
         binding = SubDeckRowBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
         return new ViewHolder(binding);
     }
 
-    // main:
-    // transfer information from decks to viewholder (and thus to the ui)
-    // casting between the two
     @Override
     public void onBindViewHolder(final ViewHolder viewHolder, int position) {
-        // set onclicks
         viewHolder.root.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -77,18 +65,12 @@ public class HomeRecyclerViewAdapter extends RecyclerView.Adapter<HomeRecyclerVi
             }
         });
         // position is the position in the list this specific viewholder is at
-        viewHolder.nameTv.setText(rootDeck.children.get(position).name); // set name
-
-        // slot in children
+        viewHolder.nameTv.setText(rootDeck.children.get(position).name);
         Deck childDeck = rootDeck.children.get(viewHolder.getBindingAdapterPosition());
 
-        // get recyclerview for list
         RecyclerView childrenRv = binding.subDeckRowRv;
-        // set layout as linaer
         childrenRv.setLayoutManager(new LinearLayoutManager(context));
-        // show a divider
         childrenRv.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
-        // set adapter
         childrenRv.setAdapter(new HomeRecyclerViewAdapter(childDeck, masterDeck, context, activity, fragment));
     }
 

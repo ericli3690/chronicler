@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FileManager<T> {
-    // instance vars
     private final File file;
     private final Class<T> objectClass;
     private final Activity activity;
@@ -35,13 +34,10 @@ public class FileManager<T> {
         this.gson = builder.create();
     }
 
-    // checks if the file already exists
     public boolean wasCreatedAlready() {
         return file.isFile();
     }
 
-    // fires whenever an error occurs
-    // a standard error message
     private void onError(int code) {
         // log a code too
             // 0: objects -> file
@@ -50,7 +46,7 @@ public class FileManager<T> {
                 activity.findViewById(android.R.id.content), // get root
                 "File Error: Please try again later. Code " + Integer.toString(code),
                 BaseTransientBottomBar.LENGTH_SHORT
-        ).show(); // immediately show
+        ).show();
     }
 
     public void writeObjectsToFile(List<T> objects) {
@@ -59,18 +55,16 @@ public class FileManager<T> {
         for (int objectIndex = 0; objectIndex < objects.size(); objectIndex++) {
             toWrites[objectIndex] = gson.toJson(objects.get(objectIndex));
         }
-        // contents are now ready
         // ensure file is gone
         file.delete();
         // then recreate
-        // use error handling
         try {
             file.createNewFile();
             FileWriter writer = new FileWriter(file);
             for (String toWrite : toWrites) {
                 writer.write(toWrite + "\n"); // separate each using a newline
             }
-            writer.close(); // conserve resources
+            writer.close();
         } catch (IOException e) {
             this.onError(0);
         }
@@ -86,16 +80,14 @@ public class FileManager<T> {
         // prepare output list for json strings
         // must use an arraylist because it is not known at this time how large the file is, and how many read outs there will be
         List<String> readOuts = new ArrayList<String>();
-        // use error handling and read
         try {
             // using bufferedreader for more efficient reading
             BufferedReader reader = new BufferedReader(new FileReader(file));
-            while (reader.ready()) { // while reader has lines
-                readOuts.add(reader.readLine()); // read and append to readout list
+            while (reader.ready()) {
+                readOuts.add(reader.readLine());
             }
-            reader.close(); // conserve resources
+            reader.close();
         } catch (IOException e) {
-            // failed for whatever reason
             this.onError(1);
             return new ArrayList<T>();
         }
@@ -105,7 +97,6 @@ public class FileManager<T> {
         for (int readOutIndex = 0; readOutIndex < readOuts.size(); readOutIndex++) {
             objects.add(gson.fromJson(readOuts.get(readOutIndex), this.objectClass));
         }
-        // return final list
         return objects;
     }
 }

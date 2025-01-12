@@ -22,11 +22,9 @@ public class GameTimelineRecyclerViewAdapter extends TimelineRecyclerViewAdapter
     public List<Card> flippedCards;
     // information about the ongoing game
     public boolean obscure;
-    // some background globals
     private Context context;
     private SettingsFile settingsFile;
 
-    // constructor
     public GameTimelineRecyclerViewAdapter(List<Card> cards, Context context, SettingsFile settingsFile) {
         super(context);
         this.cards = cards;
@@ -43,12 +41,9 @@ public class GameTimelineRecyclerViewAdapter extends TimelineRecyclerViewAdapter
     }
 
     // when rendering:
-    // cast the information from the abstruct info to the ui as it scrolls by
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder viewHolder, int position) {
-        // get card instance associated with this viewholder
         Card card = cards.get(position);
-        // set text
         viewHolder.eventTv.setText(card.event);
         if (this.obscure && position == 1) {
             viewHolder.dateTv.setText("██████████");
@@ -56,10 +51,8 @@ public class GameTimelineRecyclerViewAdapter extends TimelineRecyclerViewAdapter
             viewHolder.dateTv.setText(card.date.toString());
         }
         viewHolder.infoTv.setText(card.info);
-        // hide checkboxes; child classes can toggle back on
         viewHolder.checkBox.setVisibility(View.INVISIBLE);
-        // handle if flip
-        // toggle visibilities
+
         if (this.flippedCards.contains(card)) {
             viewHolder.eventTv.setVisibility(View.GONE);
             viewHolder.dateTv.setVisibility(View.GONE);
@@ -76,13 +69,11 @@ public class GameTimelineRecyclerViewAdapter extends TimelineRecyclerViewAdapter
         viewHolder.root.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // flip flipped status
                 if (flippedCards.contains(card)) {
                     flippedCards.remove(card);
                 } else {
                     flippedCards.add(card);
                 }
-                // update on screen
                 notifyItemChanged(cards.indexOf(card));
                 // play sound for flipping
                 MediaPlayer player = MediaPlayer.create(context, R.raw.flip);
@@ -90,7 +81,7 @@ public class GameTimelineRecyclerViewAdapter extends TimelineRecyclerViewAdapter
                 // must do it logarithmically
                 float logVolume = (float) (1 - Math.log(100-settingsFile.volume)/Math.log(100));
                 player.setVolume(logVolume, logVolume);
-                player.start(); // play the sound!
+                player.start();
             }
         });
     }

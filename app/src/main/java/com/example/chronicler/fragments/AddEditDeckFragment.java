@@ -31,7 +31,6 @@ import java.util.List;
 // depending on which parameters this screen is opened with, both can happen
 public class AddEditDeckFragment extends Fragment {
 
-    // ui control
     private FragmentAddEditDeckBinding binding;
     // controls whether this is adddeck or editdeck
     private boolean isNew;
@@ -44,7 +43,6 @@ public class AddEditDeckFragment extends Fragment {
     // which deck is currently checked by the user on the parent deck selection list
     private int checkedIndex;
 
-    // android-required ui initialization method
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -53,7 +51,6 @@ public class AddEditDeckFragment extends Fragment {
         return binding.getRoot();
     }
 
-    // main:
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -84,7 +81,6 @@ public class AddEditDeckFragment extends Fragment {
             }
         });
 
-        // set delete button visibility
         if (isNew) {
             binding.fragmentAddEditDeckDelete.setVisibility(View.GONE);
         }
@@ -103,14 +99,11 @@ public class AddEditDeckFragment extends Fragment {
         radioListBundle.putStringArrayList("names", names);
 
         // get selected radio; essentially, what is the current parent deck
-        if (isNew) { // we are creating
-            // save it and show it in the radio list
+        if (isNew) {
             radioListBundle.putInt("checked", 0);
             this.checkedIndex = 0;
-        } else { // we are editing
-            // set the title to be the name of hte deck we are editing
+        } else {
             binding.fragmentAddEditDeckName.setText(flattenedList.get(this.deckIndex).name);
-            // likewise
             radioListBundle.putInt("checked", this.parentIndex);
             this.checkedIndex = this.parentIndex;
         }
@@ -130,7 +123,6 @@ public class AddEditDeckFragment extends Fragment {
             }
         });
 
-        // set toolbar text
         ((Toolbar) requireActivity().findViewById(R.id.activity_main_toolbar)).setTitle(
                 this.isNew ? "Add Deck" : "Edit Deck: " + flattenedList.get(this.deckIndex).name);
 
@@ -140,13 +132,10 @@ public class AddEditDeckFragment extends Fragment {
             new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    // sever the child from the tree
                     Deck parent = flattenedList.get(parentIndex);
                     Deck child = flattenedList.get(deckIndex);
                     parent.children.remove(child);
-                    // sort all decks alphabetically by name
                     masterDeck.doSortChildren();
-                    // write to file
                     masterDeckManager.writeSingleObjectToFile(masterDeck);
                     // navigate back two screens
                     NavHostFragment.findNavController(AddEditDeckFragment.this).navigate(
@@ -154,51 +143,40 @@ public class AddEditDeckFragment extends Fragment {
                     );
                 }
             },
-            requireContext() // needs some other android information
+            requireContext()
         ));
 
         //// done button onclick
         binding.fragmentAddEditDeckDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // get name that was chosen
                 String name = binding.fragmentAddEditDeckName.getText().toString();
-                // get clicked parent deck
                 Deck parentDeck = flattenedList.get(checkedIndex);
                 Deck childDeck;
-                // add or edit?
+
                 if (isNew) {
-                    // create and attach
                     childDeck = new Deck(name);
                     parentDeck.children.add(childDeck);
                 } else {
-                    // get edited deck
                     childDeck = flattenedList.get(deckIndex);
                     // ensure did not set parent to self or any of self's children
-                    // this sort of self-referential error will lead to the deck falling off from the tree: data loss
+                    // this sort of self-referential error will lead to the deck falling off from the tree
                     if (childDeck.getFlattenedList().contains(parentDeck)) {
                         Snackbar.make(
                                 requireActivity().findViewById(android.R.id.content), // get root
                                 "You can't make " + name + " be a child of itself or any of " + name + "'s children.",
                                 BaseTransientBottomBar.LENGTH_SHORT
-                        ).show(); // immediately show
-                        return; // break out
+                        ).show();
+                        return;
                     }
-                    // set new name
                     childDeck.name = name;
-                    // add to new parent's children
                     parentDeck.children.add(childDeck);
-                    // remove from old parent's children
                     flattenedList.get(parentIndex).children.remove(childDeck);
                 }
-                // write to file
                 masterDeck.doSortChildren();
-                // sort decks alphabetically by name
                 masterDeckManager.writeSingleObjectToFile(masterDeck);
-                // get indices of new / edited deck
                 List<Deck> flattenedList = masterDeck.getFlattenedList();
                 deckIndex = flattenedList.indexOf(childDeck);
-                // find the clicked deck's parent; get its position in the flattened list
                 List<Integer> parentPointers = masterDeck.getHierarchy();
                 parentIndex = parentPointers.get(deckIndex); // returns an Integer
                 // navigate back

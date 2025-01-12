@@ -13,7 +13,6 @@ import com.example.chronicler.datatypes.Deck;
 import com.example.chronicler.datatypes.SettingsFile;
 import com.example.chronicler.functions.FileManager;
 
-// main entry point of app
 public class MainActivity extends AppCompatActivity {
 
     // files and file managers for public use
@@ -22,7 +21,6 @@ public class MainActivity extends AppCompatActivity {
     public FileManager<SettingsFile> settingsFileManager;
     public SettingsFile settingsFile;
 
-    // when the app first runs, this is called
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // initialize activity
@@ -36,12 +34,9 @@ public class MainActivity extends AppCompatActivity {
         // retrieve deck list
         masterDeckManager = new FileManager<Deck>("decks.txt", Deck.class, MainActivity.this, this);
         if (!masterDeckManager.wasCreatedAlready()) {
-            // does the master deck NOT exist?
-            // if so create it and write it to file
             masterDeck = new Deck("(none)");
             masterDeckManager.writeSingleObjectToFile(masterDeck);
         } else {
-            // already exists, just read it
             masterDeck = masterDeckManager.readObjectsFromFile().get(0);
         }
 
@@ -49,17 +44,12 @@ public class MainActivity extends AppCompatActivity {
         // storing these at the root activity will allow game fragment to access them easily
         settingsFileManager = new FileManager<SettingsFile>("settings.txt", SettingsFile.class, MainActivity.this, this);
         if (!settingsFileManager.wasCreatedAlready()) {
-            // does the settings file NOT exist?
-            // if so create it and write it to file
-            // use the default settings
             settingsFile = new SettingsFile(100, 0);
             settingsFileManager.writeSingleObjectToFile(settingsFile);
         } else {
-            // already exists, just read it
             settingsFile = settingsFileManager.readObjectsFromFile().get(0);
         }
-        
-        // set navigation between fragments
+
         // this class contains the navhost that controls all navigation
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.activity_main_navigator_container);
         NavController navController = navHostFragment.getNavController();

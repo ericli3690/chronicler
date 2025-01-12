@@ -27,7 +27,6 @@ public abstract class ChronologicalTimelineRecyclerViewAdapter extends TimelineR
     // some other important background info
     private SettingsFile settingsFile;
 
-    // easy constructor
     public ChronologicalTimelineRecyclerViewAdapter(CardChronologicalList chronologicalCards, Context context, SettingsFile settingsFile) {
         super(context);
         this.chronologicalCards = chronologicalCards;
@@ -42,19 +41,13 @@ public abstract class ChronologicalTimelineRecyclerViewAdapter extends TimelineR
     }
 
     // casting the abstract information to the ui elements
-    // ex. setting text, checkboxes
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder viewHolder, int position) {
-        // get card instance associated with this viewholder
         Card card = renderedChronologicalCards.get(position);
-        // set text
         viewHolder.eventTv.setText(card.event);
         viewHolder.dateTv.setText(card.date.toString());
         viewHolder.infoTv.setText(card.info);
-        // hide checkboxes; child classes can toggle back on
         viewHolder.checkBox.setVisibility(View.INVISIBLE);
-        // handle if flip
-        // toggle visibilities
         if (this.flippedCards.contains(card)) {
             viewHolder.eventTv.setVisibility(View.GONE);
             viewHolder.dateTv.setVisibility(View.GONE);
@@ -71,13 +64,11 @@ public abstract class ChronologicalTimelineRecyclerViewAdapter extends TimelineR
         viewHolder.root.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // flip flipped status
                 if (flippedCards.contains(card)) {
                     flippedCards.remove(card);
                 } else {
                     flippedCards.add(card);
                 }
-                // update on screen
                 notifyItemChanged(renderedChronologicalCards.indexOf(card));
                 // play sound
                 MediaPlayer player = MediaPlayer.create(context, R.raw.flip);
@@ -85,7 +76,7 @@ public abstract class ChronologicalTimelineRecyclerViewAdapter extends TimelineR
                 // must do it logarithmically
                 float logVolume = (float) (1 - Math.log(100-settingsFile.volume)/Math.log(100));
                 player.setVolume(logVolume, logVolume);
-                player.start(); // play sound!
+                player.start();
             }
         });
     }
@@ -101,17 +92,14 @@ public abstract class ChronologicalTimelineRecyclerViewAdapter extends TimelineR
             boolean thisContainsSearchTerm = false;
             if (card.event.toUpperCase().contains(searchTerm.toUpperCase())) {
                 thisContainsSearchTerm = true;
-                // this one is fine, has a matching name
             } else {
                 for (String tag : card.tags) {
                     if (tag.equalsIgnoreCase(searchTerm)) {
                         thisContainsSearchTerm = true;
-                        // this one has a matching tag
                     }
                 }
             }
             if (thisContainsSearchTerm) {
-                // contains; keep it
                 this.renderedChronologicalCards.add(card);
             }
         }

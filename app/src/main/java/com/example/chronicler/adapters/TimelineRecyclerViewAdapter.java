@@ -61,26 +61,19 @@ public abstract class TimelineRecyclerViewAdapter extends RecyclerView.Adapter<T
     //          full
     //
 
-    // instance vars
-    // ui control
     private SubCardRowBinding binding;
-    // which card are flipped
-    protected List<Card> flippedCards; // not chronological
-    // some background info for android
+    protected List<Card> flippedCards;
     protected Context context;
 
-    // simple constructor
     public TimelineRecyclerViewAdapter(Context context) {
-        // flips
         this.flippedCards = new ArrayList<Card>();
         this.context = context;
     }
 
-    // when a new card comes into view on the ui
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // inflate binding and link to viewholder; show it
+        // inflate binding
         binding = SubCardRowBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
         return new ViewHolder(binding);
     }
@@ -94,7 +87,6 @@ public abstract class TimelineRecyclerViewAdapter extends RecyclerView.Adapter<T
         public final TextView infoTv;
         public final CheckBox checkBox;
 
-        // constructor
         public ViewHolder(SubCardRowBinding binding) {
             super(binding.getRoot());
 
